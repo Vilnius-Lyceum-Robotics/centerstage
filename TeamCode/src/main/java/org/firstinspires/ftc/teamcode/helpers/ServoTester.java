@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.helpers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.hardware.Controls;
 
 @TeleOp
-public class ServoConfigurator extends LinearOpMode {
+public class ServoTester extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
