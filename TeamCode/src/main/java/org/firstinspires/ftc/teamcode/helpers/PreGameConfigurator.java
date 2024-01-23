@@ -19,12 +19,12 @@ public class PreGameConfigurator {
         telemetry.update();
         while (true) {
             if (controls.getDpadLeft()) {
-                telemetry.addData("CFG", "Picked" + trueOption + " - true");
+                telemetry.addData("CFG", "Picked " + trueOption + " - true");
                 telemetry.update();
                 sleep(1000);
                 return true;
             } else if (controls.getDpadRight()) {
-                telemetry.addData("CFG", "Picked" + falseOption + " - false");
+                telemetry.addData("CFG", "Picked " + falseOption + " - false");
                 telemetry.update();
                 sleep(1000);
                 return false;
@@ -38,12 +38,12 @@ public class PreGameConfigurator {
         telemetry.update();
         while (true) {
             if (controls.getDpadUp()) {
-                telemetry.addData("CFG", "Picked" + trueOption + " - true");
+                telemetry.addData("CFG", "Picked " + trueOption + " - true");
                 telemetry.update();
                 sleep(1000);
                 return true;
             } else if (controls.getDpadDown()) {
-                telemetry.addData("CFG", "Picked" + falseOption + " - false");
+                telemetry.addData("CFG", "Picked " + falseOption + " - false");
                 telemetry.update();
                 sleep(1000);
                 return false;

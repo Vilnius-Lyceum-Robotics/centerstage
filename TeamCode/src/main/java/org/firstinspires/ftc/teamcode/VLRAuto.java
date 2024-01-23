@@ -61,14 +61,16 @@ public class VLRAuto extends LinearOpMode {
             yDelta = (24 * 2 - cfg.ROBOT_LENGTH / 2) - 8; // Position of prop relative to start point
             xDelta = (-12 + cfg.ROBOT_WIDTH / 2) + 4;
             xDelta = isLeft ? xDelta : -xDelta;
+            telemetry.addData("MAIN", "xDelta: " + xDelta);
+            telemetry.update();
 
             double angle = 0; // Angle the robot should be facing to hit the prop
             if (isLeft && isRed) angle = Math.toRadians(180);
             if (!isLeft && !isRed) angle = Math.toRadians(180);
 
             // Determine prop position on field plane
-            Pose2d placePos = new Pose2d(startPose.position.x + allianceCoef * xDelta,
-                    startPose.position.y + allianceCoef * yDelta, 0);
+            Pose2d placePos = new Pose2d(startPose.position.x + xDelta,
+                    startPose.position.y + allianceCoef * yDelta, angle);
 
             // Move up to not hit the pillar on the left / right while turning
             navBuilder = navBuilder.lineToY(startPose.position.y + allianceCoef * (yDelta / 1.5))
@@ -76,12 +78,9 @@ public class VLRAuto extends LinearOpMode {
                     .splineToLinearHeading(placePos, angle);
         }
 
-        navBuilder.afterTime(0.2, claw::ToggleClawLeft)
-                .afterTime(0.4, () -> {
-                    claw.ToggleClawLeft();
-                    claw.clawRotator.setPosition(0.2);
-                })
-                .waitSeconds(0.6);
+        navBuilder = navBuilder.waitSeconds(0.1).afterTime(0.2, claw::ToggleClawLeft)
+                .afterTime(0.4, () -> claw.clawRotator.setPosition(0.2))
+                .waitSeconds(0.9);
 
         //////////////////////////////////////////////////////////
         Actions.runBlocking(navBuilder.build());
