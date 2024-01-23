@@ -26,82 +26,31 @@ public class VLRTeleOp extends LinearOpMode {
 
         ClawNArm clawNArm = new ClawNArm(hardwareMap);
 
-        boolean lBumperDebounce = false;
-        boolean rBumperDebounce = false;
-
-        boolean frontDebounce = false;
-        boolean frontPos = false;
-
+        int armPosition = 0; // 0 - front, 1 - carry, 2 - back
         waitForStart();
         // Main loop
         while (opModeIsActive()) {
-            // Controls
-            Pose2d controllerInput = controls.getControls();
+            chassis.setPower(1 - controls.getLeftTrigger() * 0.5);
+            chassis.drive(controls.getControls());
 
+            if (controls.getDpadUp()) lift.up();
+            else if (controls.getDpadDown()) lift.down();
+            else lift.stop();
 
-            chassis.setPower(1 - controls.getTrigger() * 0.5);
-            telemetry.addData("input", "%6.1f %6.1f %6.1f %6.1f", controllerInput.position.x, controllerInput.position.y, controllerInput.heading.real, controllerInput.heading.imag);
-            telemetry.update();
-            double[] wheelSpeeds = chassis.drive(controllerInput);
-            //mc.move(controllerInput.scale(1), 0.5);
-            // telemetry.addData("Wheel speeds", "%6.1f %6.1f %6.1f %6.1f",
-            //        wheelSpeeds[0], wheelSpeeds[1], wheelSpeeds[2], wheelSpeeds[3]);
+            if (controls.getDpadLeft()) armPosition -= 1;
+            else if (controls.getDpadRight()) armPosition += 1;
+            armPosition = Math.max(0, Math.min(2, armPosition));
 
-            if (controls.getDpadUp()) {
-                lift.up();
-            } else if (controls.getDpadDown()) {
-                lift.down();
-            } else {
-                lift.stop();
-            }
+            if (armPosition == 2) clawNArm.ArmBack();
+            else if (armPosition == 1) clawNArm.ArmCarryPos();
+            else clawNArm.ArmFront();
 
-            if (controls.getDpadLeft()) {
-                if (!frontDebounce) {
-                    if (!frontPos) {
-                        clawNArm.ArmCarryPos();
-                        frontPos = true;
-                    } else {
-                        clawNArm.ArmFront();
-                        frontPos = false;
-                    }
-                    frontDebounce = true;
-                }
-            } else if (controls.getDpadRight()) {
-                if (!frontDebounce) {
-                    if (frontPos) {
-                        clawNArm.ArmBack();
-                        frontPos = false;
-                    } else {
-                        clawNArm.ArmCarryPos();
-                        frontPos = true;
-                    }
-                    frontDebounce = true;
-                }
-            } else {
-                frontDebounce = false;
-            }
+            if (controls.getLeftBumper(true)) clawNArm.ToggleClawLeft();
+            if (controls.getRightBumper(true)) clawNArm.ToggleClawRight();
 
+            if (controls.getRightTrigger() > 0.8) plane.launch();
 
-            if (controls.getLeftBumper()) {
-                if (!lBumperDebounce) clawNArm.ToggleClawLeft();
-                lBumperDebounce = true;
-            } else lBumperDebounce = false;
-
-            if (controls.getRightBumper()) {
-                if (!rBumperDebounce) clawNArm.ToggleClawRight();
-                rBumperDebounce = true;
-            } else {
-                rBumperDebounce = false;
-
-            }
-
-            if (controls.gamepad.right_trigger > 0.8) {
-                plane.launch();
-            }
-
-            //camera.process();
             sleep(20);
         }
     }
 }
-// Why are you here? What reason do you have to procrastinate and be here? Be a good programmer and WORK!

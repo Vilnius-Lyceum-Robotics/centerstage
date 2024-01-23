@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantFunction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -9,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.hardware.Camera;
 import org.firstinspires.ftc.teamcode.hardware.ClawNArm;
 import org.firstinspires.ftc.teamcode.hardware.Controls;
@@ -16,7 +15,7 @@ import org.firstinspires.ftc.teamcode.helpers.AutoConfig;
 import org.firstinspires.ftc.teamcode.helpers.PreGameConfigurator;
 
 @Autonomous
-public class Auto extends LinearOpMode {
+public class VLRAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         AutoConfig cfg = new AutoConfig();

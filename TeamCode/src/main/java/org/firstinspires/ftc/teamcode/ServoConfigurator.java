@@ -7,11 +7,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.hardware.Controls;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @TeleOp
 public class ServoConfigurator extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         waitForStart();
+
         String[] servos = {"LeftLift", "RightLift", "Arm", "LeftClaw", "RightClaw", "PlaneServo"};
         double[] powers = new double[servos.length];
         int i = 0;
@@ -32,8 +36,8 @@ public class ServoConfigurator extends LinearOpMode {
             } else if (gp.getDpadDown()) {
                 powers[i] -= 0.05;
             }
-            powers[i] = Math.max(0, Math.min(powers[i], 1.0));
 
+            powers[i] = Math.max(0, Math.min(powers[i], 1));
             Servo servo = hardwareMap.get(Servo.class, servos[i]);
             if (gp.getB()) servo.setPosition(powers[i]);
             sleep(100);

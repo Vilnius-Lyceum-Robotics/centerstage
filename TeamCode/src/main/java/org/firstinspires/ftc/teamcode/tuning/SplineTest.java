@@ -1,20 +1,12 @@
 package org.firstinspires.ftc.teamcode.tuning;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.roadrunner.Arclength;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Pose2dDual;
-import com.acmerobotics.roadrunner.PosePath;
-import com.acmerobotics.roadrunner.Rotation2d;
-import com.acmerobotics.roadrunner.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.TankDrive;
+import org.firstinspires.ftc.teamcode.drivetrain.MecanumDrive;
+import org.firstinspires.ftc.teamcode.drivetrain.TankDrive;
 
 public final class SplineTest extends LinearOpMode {
     @Override
