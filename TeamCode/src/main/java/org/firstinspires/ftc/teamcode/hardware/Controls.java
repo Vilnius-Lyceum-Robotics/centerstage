@@ -11,6 +11,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 import java.util.Map;
 
+/**
+ * @noinspection DataFlowIssue, unused, RedundantSuppression
+ */
 public class Controls {
     public Gamepad gamepad;
     public IMU imu;

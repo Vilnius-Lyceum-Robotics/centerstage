@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -13,22 +12,19 @@ import org.firstinspires.ftc.teamcode.hardware.Plane;
 
 @TeleOp(name = "VLRTeleOp")
 public class VLRTeleOp extends LinearOpMode {
-    public final Pose2d StartPos = new Pose2d(0, 0, Math.toRadians(0));
-
     @Override
     public void runOpMode() {
         Chassis chassis = new Chassis(hardwareMap);
         Controls controls = new Controls(gamepad1, hardwareMap.get(IMU.class, "imu"));
 
         Lift lift = new Lift(hardwareMap);
-
         Plane plane = new Plane(hardwareMap);
-
         ClawNArm clawNArm = new ClawNArm(hardwareMap);
 
         int armPosition = 0; // 0 - front, 1 - carry, 2 - back
+
         waitForStart();
-        // Main loop
+
         while (opModeIsActive()) {
             chassis.setPower(1 - controls.getLeftTrigger() * 0.5);
             chassis.drive(controls.getControls());
@@ -37,8 +33,8 @@ public class VLRTeleOp extends LinearOpMode {
             else if (controls.getDpadDown()) lift.down();
             else lift.stop();
 
-            if (controls.getDpadLeft()) armPosition -= 1;
-            else if (controls.getDpadRight()) armPosition += 1;
+            if (controls.getDpadLeft(true)) armPosition -= 1;
+            else if (controls.getDpadRight(true)) armPosition += 1;
             armPosition = Math.max(0, Math.min(2, armPosition));
 
             if (armPosition == 2) clawNArm.ArmBack();

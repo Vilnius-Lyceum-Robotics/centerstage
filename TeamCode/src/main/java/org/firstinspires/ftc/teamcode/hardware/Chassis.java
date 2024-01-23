@@ -12,9 +12,6 @@ public class Chassis {
     DcMotor MotorRightFront;
 
     private double power = 0.2;
-    final double LENGTH = 0.8; // Length from wheel to wheel of robot (lengthwise), meters
-    final double WIDTH = 1.0; // Length from wheel to wheel of robot (widthwise), meters
-    final double WHEEL_RADIUS = 3; // Radius of wheel (cm)
 
     public Chassis(HardwareMap hardwareMap) {
 
@@ -47,7 +44,7 @@ public class Chassis {
         MotorRightFront.setPower(0);
     }
 
-    public double[] drive(Pose2d vector) {
+    public void drive(Pose2d vector) {
         double[] wheelSpeeds = new double[4]; // Front left, front right, back right, back left
 
 
@@ -60,22 +57,17 @@ public class Chassis {
         // Normalizing speeds if any of them exceed the maximum speed of 1
         double max = Math.abs(wheelSpeeds[0]);
 
-        for (double wheelSpeed : wheelSpeeds) {
-            max = Math.max(max, Math.abs(wheelSpeed));
-        }
-        System.out.println(wheelSpeeds[0] + " " + wheelSpeeds[1] + " " + wheelSpeeds[2] + " " + wheelSpeeds[3]);
+        for (double wheelSpeed : wheelSpeeds) max = Math.max(max, Math.abs(wheelSpeed));
         if (max > 1) {
             for (int i = 0; i < wheelSpeeds.length; i++) {
                 wheelSpeeds[i] = wheelSpeeds[i] / max;
             }
         }
-        System.out.println(wheelSpeeds[0] + " " + wheelSpeeds[1] + " " + wheelSpeeds[2] + " " + wheelSpeeds[3]);
+
         MotorLeftBack.setPower(wheelSpeeds[0] * power);
         MotorLeftFront.setPower(-wheelSpeeds[1] * power);
         MotorRightBack.setPower(wheelSpeeds[2] * power);
         MotorRightFront.setPower(-wheelSpeeds[3] * power);
-
-        return wheelSpeeds;
     }
 
     public void setPower(double pwr) {

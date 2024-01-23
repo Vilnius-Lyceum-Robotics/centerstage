@@ -7,13 +7,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.hardware.Controls;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @TeleOp
 public class ServoConfigurator extends LinearOpMode {
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         waitForStart();
 
         String[] servos = {"LeftLift", "RightLift", "Arm", "LeftClaw", "RightClaw", "PlaneServo"};

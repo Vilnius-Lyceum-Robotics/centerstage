@@ -51,32 +51,29 @@ public class VLRAuto extends LinearOpMode {
 
         int allianceCoef = isRed ? 1 : -1; // 1 for red, -1 for blue
 
-        switch (propPosition) {
-            case CENTER:
-                yDelta = -24 - cfg.ROBOT_LENGTH / 2.0 - 6;
-                navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
-                break;
-            default:
-                // Left or right
-                boolean isLeft = propPosition == Camera.PropPos.LEFT;
+        if (propPosition == Camera.PropPos.CENTER) {
+            yDelta = -24 - cfg.ROBOT_LENGTH / 2.0 - 6;
+            navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
+        } else {
+            // Left or right
+            boolean isLeft = propPosition == Camera.PropPos.LEFT;
 
-                yDelta = (24 * 2 - cfg.ROBOT_LENGTH / 2) - 8; // Position of prop relative to start point
-                xDelta = (-12 + cfg.ROBOT_WIDTH / 2) + 4;
-                xDelta = isLeft ? xDelta : -xDelta;
+            yDelta = (24 * 2 - cfg.ROBOT_LENGTH / 2) - 8; // Position of prop relative to start point
+            xDelta = (-12 + cfg.ROBOT_WIDTH / 2) + 4;
+            xDelta = isLeft ? xDelta : -xDelta;
 
-                double angle = 0; // Angle the robot should be facing to hit the prop
-                if (isLeft && isRed) angle = Math.toRadians(180);
-                if (!isLeft && !isRed) angle = Math.toRadians(180);
+            double angle = 0; // Angle the robot should be facing to hit the prop
+            if (isLeft && isRed) angle = Math.toRadians(180);
+            if (!isLeft && !isRed) angle = Math.toRadians(180);
 
-                // Determine prop position on field plane
-                Pose2d placePos = new Pose2d(startPose.position.x + allianceCoef * xDelta,
-                        startPose.position.y + allianceCoef * yDelta, 0);
+            // Determine prop position on field plane
+            Pose2d placePos = new Pose2d(startPose.position.x + allianceCoef * xDelta,
+                    startPose.position.y + allianceCoef * yDelta, 0);
 
-                // Move up to not hit the pillar on the left / right while turning
-                navBuilder = navBuilder.lineToY(startPose.position.y + allianceCoef * (yDelta / 1.5))
-                        // and go to the prop
-                        .splineToLinearHeading(placePos, angle);
-                break;
+            // Move up to not hit the pillar on the left / right while turning
+            navBuilder = navBuilder.lineToY(startPose.position.y + allianceCoef * (yDelta / 1.5))
+                    // and go to the prop
+                    .splineToLinearHeading(placePos, angle);
         }
 
         navBuilder.afterTime(0.2, claw::ToggleClawLeft)
