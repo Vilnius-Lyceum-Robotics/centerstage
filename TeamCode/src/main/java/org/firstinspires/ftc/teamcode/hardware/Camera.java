@@ -37,7 +37,6 @@ public class Camera {
     public Camera(HardwareMap hardwareMap, boolean alliance) {
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam");
         AprilTagLibrary tagLibrary = new AprilTagLibrary.Builder()
-                // todo add tags .addTag()
                 .addTag(1, "Blue Alliance Left", 5.08, DistanceUnit.CM)
                 .addTag(2, "Blue Alliance Center", 5.08, DistanceUnit.CM)
                 .addTag(3, "Blue Alliance Right", 5.08, DistanceUnit.CM)
@@ -47,7 +46,7 @@ public class Camera {
                 .build();
 
         aprilTagProcessor = new AprilTagProcessor.Builder()
-                //.setTagLibrary(tagLibrary)
+                .setTagLibrary(tagLibrary)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
                 .build();
