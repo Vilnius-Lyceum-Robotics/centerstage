@@ -46,6 +46,9 @@ public class VLRTeleOp extends LinearOpMode {
 
             if (controls.getRightTrigger() > 0.8) plane.launch();
 
+            telemetry.addData("motor pos", "%.6f", (float)clawNArm.rotator.getCurrentPosition());
+            telemetry.update();
+
             sleep(20);
         }
     }

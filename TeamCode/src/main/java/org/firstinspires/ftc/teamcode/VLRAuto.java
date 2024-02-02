@@ -78,7 +78,8 @@ public class VLRAuto extends LinearOpMode {
                     .splineToLinearHeading(placePos, angle);
         }
 
-        navBuilder = navBuilder.waitSeconds(0.1).afterTime(0.2, claw::ToggleClawLeft)
+        navBuilder = navBuilder.waitSeconds(0.1)
+                .afterTime(0.2, claw::ToggleClawLeft)
                 .afterTime(0.4, () -> claw.clawRotator.setPosition(0.2))
                 .waitSeconds(0.9);
 
