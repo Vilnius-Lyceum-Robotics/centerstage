@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -16,16 +17,17 @@ public class ClawNArm {
         clawR = hardwareMap.get(Servo.class, "RightClaw");
 
         clawRotator = hardwareMap.get(Servo.class, "Arm");
-        rotator = new Motor(hardwareMap, "Rotator");
+        rotator = new PositionPIDMotor(hardwareMap, "Rotator");
 
 
         // set the run mode
         rotator.setRunMode(Motor.RunMode.PositionControl);
-        rotator.setDistancePerPulse(1);
-        rotator.setPositionTolerance(2);
+        rotator.setDistancePerPulse(0.09);
+        rotator.setPositionTolerance(1);
 
 
-        rotator.setVeloCoefficients(0.5, 0.004, 0);
+
+        rotator.setPositionCoefficient(0.2);
         rotator.resetEncoder();
 
         //rotator.setFeedforwardCoefficients(0.92, 0.47, 0.3);
@@ -34,35 +36,58 @@ public class ClawNArm {
         clawR.setPosition(0.4);
     }
 
+    /*public void PIDcontrollerThing(double setpointer) {
+        double kP = 0;
+        double kI = 0;
+        double kD = 0;
+        PIDController pid = new PIDController(kP, kI, kD);
+        pid.setSetPoint(setpointer);
+        rotator.setTargetPosition((int)setpointer);
+        while (!pid.atSetPoint()) {
+            double output = pid.calculate(rotator.getCurrentPosition());
+            rotator.set(output);
+        }
+
+    }*/
     public void ArmFront() {
-        rotatorL.setPosition(1);
-        rotatorR.setPosition(0);
+        //rotatorL.setPosition(1);
+        //rotatorR.setPosition(0);
 
         clawRotator.setPosition(0.6);
         // -104
-        rotator.setTargetDistance(0);
-        rotator.set(1);
+        rotator.set(0.2);
+        rotator.setTargetPosition(5);
+        //PIDcontrollerThing(5);
     }
 
+
     public void ArmCarryPos() {
-        rotatorL.setPosition(0.88);
-        rotatorR.setPosition(0.12);
+        //rotatorL.setPosition(0.88);
+        //rotatorR.setPosition(0.12);
 
         clawRotator.setPosition(0.6);
         // -100
-        rotator.setTargetDistance(10);
-        rotator.set(1);
+        rotator.set(0.8);
+        rotator.setTargetPosition(10);
+
+        //PIDcontrollerThing(10);
     }
 
+
+
     public void ArmBack() {
-        rotatorL.setPosition(0.1);
-        rotatorR.setPosition(0.9);
+        //rotatorL.setPosition(0.1);
+        //rotatorR.setPosition(0.9);
 
         clawRotator.setPosition(0.92);
 
         //26
-        rotator.setTargetDistance(26);
         rotator.set(1);
+        rotator.setTargetPosition(120);
+        //PIDcontrollerThing(110);
+
+
+
     }
 
     public void ToggleClawLeft() {
