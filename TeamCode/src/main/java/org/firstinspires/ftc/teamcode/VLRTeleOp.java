@@ -29,9 +29,9 @@ public class VLRTeleOp extends LinearOpMode {
             chassis.setPower(1 - controls.getLeftTrigger() * 0.5);
             chassis.drive(controls.getControls());
 
-            if (controls.getDpadUp()) lift.up();
-            else if (controls.getDpadDown()) lift.down();
-            else lift.stop();
+            //if (controls.getDpadUp()) lift.up();
+            //else if (controls.getDpadDown()) lift.down();
+            //else lift.stop();
 
             if (controls.getDpadLeft(true)) armPosition -= 1;
             else if (controls.getDpadRight(true)) armPosition += 1;
