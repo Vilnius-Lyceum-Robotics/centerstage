@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -76,12 +77,37 @@ public class VLRAuto extends LinearOpMode {
             navBuilder = navBuilder.lineToY(startPose.position.y + allianceCoef * (yDelta / 1.5))
                     // and go to the prop
                     .splineToLinearHeading(placePos, angle);
+
         }
 
         navBuilder = navBuilder.waitSeconds(0.1).afterTime(0.2, claw::ToggleClawLeft)
                 .afterTime(0.4, () -> claw.clawRotator.setPosition(0.2))
                 .waitSeconds(0.9);
 
+
+            if (isNearBackboard)
+                if (propPosition != Camera.PropPos.CENTER) {
+                }
+                else{
+                    navBuilder = navBuilder.lineToX(startPose.position.x + cfg.ROBOT_LENGTH)
+                            .splineToLinearHeading(
+                                    new Pose2d((startPose.position.x + cfg.ROBOT_LENGTH),
+                                            (startPose.position.y + allianceCoef * (yDelta / 1.5)),
+                                            Math.toRadians(180)),  Math.toRadians(0));
+                }
+            else {
+                if (propPosition != Camera.PropPos.CENTER) {
+                    navBuilder = navBuilder.splineTo(new Vector2d(24, -12), Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(12*4, -34, Math.toRadians(180)), Math.toRadians(0));
+                }
+                else {
+                    navBuilder = navBuilder.lineToX(startPose.position.x + cfg.ROBOT_LENGTH)
+                            .splineToLinearHeading(
+                                    new Pose2d((startPose.position.x + cfg.ROBOT_LENGTH),
+                                            (startPose.position.y + allianceCoef * (yDelta / 1.5)),
+                                            Math.toRadians(180)), Math.toRadians(0));
+                }
+            }
         //////////////////////////////////////////////////////////
         Actions.runBlocking(navBuilder.build());
         //////////////////////////////////////////////////////////
