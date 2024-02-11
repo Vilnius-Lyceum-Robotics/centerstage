@@ -2,51 +2,64 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.hardware.Chassis;
-import org.firstinspires.ftc.teamcode.hardware.ClawNArm;
-import org.firstinspires.ftc.teamcode.hardware.Controls;
+import org.firstinspires.ftc.teamcode.hardware.ClawNArm; 
 import org.firstinspires.ftc.teamcode.hardware.Lift;
 import org.firstinspires.ftc.teamcode.hardware.Plane;
+import org.firstinspires.ftc.ftclib.gamepad.GamepadEx;
 
 @TeleOp(name = "VLRTeleOp")
 public class VLRTeleOp extends LinearOpMode {
+    private Chassis chassis;
+    private ClawNArm clawNArm;
+    private Lift lift;
+    private Plane plane;
+    private GamepadEx gamepadEx;
+
     @Override
     public void runOpMode() {
-        Chassis chassis = new Chassis(hardwareMap);
-        Controls controls = new Controls(gamepad1, hardwareMap.get(IMU.class, "imu"));
-
-        Lift lift = new Lift(hardwareMap);
-        Plane plane = new Plane(hardwareMap);
-        ClawNArm clawNArm = new ClawNArm(hardwareMap);
-
-        int armPosition = 0; // 0 - front, 1 - carry, 2 - back
+        chassis = new Chassis(hardwareMap);
+        clawNArm = new ClawNArm(hardwareMap);
+        lift = new Lift(hardwareMap);
+        plane = new Plane(hardwareMap);
+        gamepadEx = new GamepadEx(gamepad1);
 
         waitForStart();
 
         while (opModeIsActive()) {
-            chassis.setPower(1 - controls.getLeftTrigger() * 0.5);
-            chassis.drive(controls.getControls());
+            chassis.setPower(1 - gamepadEx.getTriggerValue(GamepadEx.Trigger.RIGHT_TRIGGER));
+            chassis.drive(gamepadEx.getLeftStickX(), gamepadEx.getLeftStickY(), gamepadEx.getRightStickX());
 
-            //if (controls.getDpadUp()) lift.up();
-            //else if (controls.getDpadDown()) lift.down();
-            //else lift.stop();
+            if (gamepadEx.isButtonPressed(GamepadEx.Button.DPAD_LEFT)) {
+                armPosition = Math.max(0, armPosition - 1);
+            } else if (gamepadEx.isButtonPressed(GamepadEx.Button.DPAD_RIGHT)) {
+                armPosition = Math.min(2, armPosition + 1);
+            }
+            switch (armPosition) {
+                case 0:
+                    clawNArm.armFront();
+                    break;
+                case 1:
+                    clawNArm.armCarryPosition();
+                    break;
+                case 2:
+                    clawNArm.armBack();
+                    break;
+            }
+            if (gamepadEx.isButtonPressed(GamepadEx.Button.LEFT_BUMPER)) {
+                clawNArm.toggleClawLeft();
+            }
+            if (gamepadEx.isButtonPressed(GamepadEx.Button.RIGHT_BUMPER)) {
+                clawNArm.toggleClawRight();
+            }
 
-            if (controls.getDpadLeft(true)) armPosition -= 1;
-            else if (controls.getDpadRight(true)) armPosition += 1;
-            armPosition = Math.max(0, Math.min(2, armPosition));
+            if (gamepadEx.getTriggerValue(GamepadEx.Trigger.RIGHT_TRIGGER) > 0.8) {
+                plane.launch();
+            }
 
-            if (armPosition == 2) clawNArm.ArmBack();
-            else if (armPosition == 1) clawNArm.ArmCarryPos();
-            else clawNArm.ArmFront();
-
-            if (controls.getLeftBumper(true)) clawNArm.ToggleClawLeft();
-            if (controls.getRightBumper(true)) clawNArm.ToggleClawRight();
-
-            if (controls.getRightTrigger() > 0.8) plane.launch();
-
-            telemetry.addData("motor pos", "%.6f", (float)clawNArm.rotator.getCurrentPosition());
+            telemetry.addData("Arm Position", armPosition);
             telemetry.update();
 
             sleep(20);
