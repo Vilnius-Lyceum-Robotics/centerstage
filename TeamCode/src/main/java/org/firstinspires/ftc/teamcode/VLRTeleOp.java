@@ -49,7 +49,7 @@ public class VLRTeleOp extends LinearOpMode {
             telemetry.addData("motor pos", "%.6f", (float)clawNArm.rotator.getCurrentPosition());
             telemetry.update();
 
-            sleep(100);
+            sleep(20);
         }
     }
 }
