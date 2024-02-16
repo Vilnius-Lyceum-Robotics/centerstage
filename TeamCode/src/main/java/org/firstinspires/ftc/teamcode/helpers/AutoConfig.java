@@ -14,14 +14,14 @@ public class AutoConfig {
     //  BACKBOARD
     // 0          1
     // 2          3
-    // Start positions
+    //  AUDIENCE
 
     public AutoConfig() {
-        startPositions.put(2, new Pose2d(12, 72 - ROBOT_LENGTH / 2.0, Math.toRadians(-90)));
-        startPositions.put(0, new Pose2d(-36, 72 - ROBOT_LENGTH / 2.0, Math.toRadians(-90)));
+        startPositions.put(0, new Pose2d(12, 72 - ROBOT_LENGTH / 2.0, Math.toRadians(-90)));
+        startPositions.put(2, new Pose2d(-36, 72 - ROBOT_LENGTH / 2.0, Math.toRadians(-90)));
 
-        startPositions.put(1, new Pose2d(-36, -72 + ROBOT_LENGTH / 2.0, Math.toRadians(90)));
-        startPositions.put(3, new Pose2d(12, -72 + ROBOT_LENGTH / 2.0, Math.toRadians(90)));
+        startPositions.put(3, new Pose2d(-36, -72 + ROBOT_LENGTH / 2.0, Math.toRadians(90)));
+        startPositions.put(1, new Pose2d(12, -72 + ROBOT_LENGTH / 2.0, Math.toRadians(90)));
     }
 
     public Pose2d getStartPos(boolean isRed, boolean isNearBackboard) {
