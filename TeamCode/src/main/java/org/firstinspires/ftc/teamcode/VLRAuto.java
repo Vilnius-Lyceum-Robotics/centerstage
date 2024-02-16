@@ -105,32 +105,34 @@ public class VLRAuto extends LinearOpMode {
                 .afterTime(0.4, () -> claw.clawRotator.setPosition(0.2))
                 .waitSeconds(0.9);
 
-        yDelta = startPose.position.y/2;
-
+        double DeltaBackboardx, DeltaBackboardy;
+        DeltaBackboardy = (-1)*(startPose.position.y + allianceCoef*(cfg.ROBOT_LENGTH+14));
         if (isNearBackboard){
+            DeltaBackboardx = startPose.position.x * 3;
             double backboard = (propPosition != Camera.PropPos.CENTER) ? 1: -1;
             //WORKS CORRECTLY
             if (propPosition != Camera.PropPos.CENTER) {
-                navBuilder = navBuilder.lineToY(startPose.position.y - 12);
+                navBuilder = navBuilder.lineToY(startPose.position.y).splineToLinearHeading(
+                        new Pose2d( DeltaBackboardx, startPose.position.y + allianceCoef*12, Math.toRadians(0)), Math.toRadians(0));
             } else {
-                navBuilder = navBuilder.lineToY((yDelta + 12))
-                        .lineToX(startPose.position.x + 12);
+                navBuilder = navBuilder.lineToX(startPose.position.x + 12);
             }
             navBuilder = navBuilder.splineToLinearHeading(
-                    new Pose2d(12 * 4, startPose.position.y + backboard * yDelta, Math.toRadians(180)), Math.toRadians(0));
+                    new Pose2d(startPose.position.x + DeltaBackboardx, startPose.position.y + DeltaBackboardy, Math.toRadians(180)), Math.toRadians(0));
         }
         else {
+            DeltaBackboardx = 48 - startPose.position.y;
             if (propPosition != Camera.PropPos.CENTER) {
-                navBuilder = navBuilder.lineToY(startPose.position.y +  yDelta)
-                        .splineToLinearHeading(new Pose2d(-12,  (-12)*allianceCoef, Math.toRadians(angle)), Math.toRadians(0)); // Math.toRadians should be the same as the variable angle
+                navBuilder = navBuilder.lineToY(startPose.position.y + allianceCoef*12)
+                        .splineToLinearHeading(new Pose2d(-12,  -12*allianceCoef, Math.toRadians(angle)), Math.toRadians(0)); // Math.toRadians should be the same as the variable angle
 
             } else {
-                navBuilder = navBuilder.lineToX(startPose.position.x - 12*allianceCoef)
-                        .splineToLinearHeading(new Pose2d(-12 * 4, yDelta, Math.toRadians(180)), Math.toRadians(0))
+                navBuilder = navBuilder.lineToX(startPose.position.x - 12)
+                        .splineToLinearHeading(new Pose2d(-24 * 2, 12, Math.toRadians(180)), Math.toRadians(0))
                 ;
             }
             navBuilder = navBuilder.lineToX(24)
-                    .splineToLinearHeading(new Pose2d(startPose.position.x * (-1.3), startPose.position.y -  yDelta, Math.toRadians(180)), Math.toRadians(0));
+                    .splineToLinearHeading(new Pose2d(startPose.position.x + DeltaBackboardx, startPose.position.y + allianceCoef*DeltaBackboardy, Math.toRadians(180)), Math.toRadians(0));
         }
         //////////////////////////////////////////////////////////
         Actions.runBlocking(navBuilder.build());
