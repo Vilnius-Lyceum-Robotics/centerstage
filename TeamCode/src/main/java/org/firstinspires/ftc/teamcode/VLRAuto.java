@@ -105,34 +105,33 @@ public class VLRAuto extends LinearOpMode {
                 .afterTime(0.4, () -> claw.clawRotator.setPosition(0.2))
                 .waitSeconds(0.9);
 
+        yDelta = startPose.position.y/2;
 
-            if (isNearBackboard)
-                //WORKS CORRECTLY
-                if (propPosition != Camera.PropPos.CENTER) {
-                    navBuilder = navBuilder.lineToY(startPose.position.y/1.2)
-                            .splineToLinearHeading(
-                                    new Pose2d((startPose.position.x*4), startPose.position.y + allianceCoef*yDelta, Math.toRadians(180)), Math.toRadians(0));
-                }
-                else{
-                    navBuilder = navBuilder.lineToY( yDelta*1.1)
-                            .lineToX(startPose.position.x * 2)
-                            .splineToLinearHeading(
-                                new Pose2d(startPose.position.x * 4, startPose.position.y - allianceCoef * yDelta, Math.toRadians(180)), Math.toRadians(0));
-                }
-            else {
-                if (propPosition != Camera.PropPos.CENTER) {
-                    navBuilder = navBuilder.lineToY(startPose.position.y + allianceCoef * (yDelta * 1.3))
-                            .splineToLinearHeading(new Pose2d(-12, allianceCoef * (-yDelta / 2.5), Math.toRadians(angle)), Math.toRadians(0)); // Math.toRadians should be the same as the variable angle
-
-
-                } else {
-                    navBuilder = navBuilder.lineToX(startPose.position.x*1.625)
-                            .splineToLinearHeading(new Pose2d(-12*4, (startPose.position.y + allianceCoef * yDelta) / 3, Math.toRadians(180)), Math.toRadians(0))
-                    ;
-                }
-                navBuilder = navBuilder.lineToX(24)
-                        .splineToLinearHeading(new Pose2d(startPose.position.x*(-1.3), startPose.position.y - allianceCoef*yDelta, Math.toRadians(180)), Math.toRadians(0));
+        if (isNearBackboard){
+            double backboard = (propPosition != Camera.PropPos.CENTER) ? 1: -1;
+            //WORKS CORRECTLY
+            if (propPosition != Camera.PropPos.CENTER) {
+                navBuilder = navBuilder.lineToY(startPose.position.y - 12);
+            } else {
+                navBuilder = navBuilder.lineToY((yDelta + 12))
+                        .lineToX(startPose.position.x + 12);
             }
+            navBuilder = navBuilder.splineToLinearHeading(
+                    new Pose2d(12 * 4, startPose.position.y + backboard * yDelta, Math.toRadians(180)), Math.toRadians(0));
+        }
+        else {
+            if (propPosition != Camera.PropPos.CENTER) {
+                navBuilder = navBuilder.lineToY(startPose.position.y +  yDelta)
+                        .splineToLinearHeading(new Pose2d(-12,  (-12)*allianceCoef, Math.toRadians(angle)), Math.toRadians(0)); // Math.toRadians should be the same as the variable angle
+
+            } else {
+                navBuilder = navBuilder.lineToX(startPose.position.x - 12*allianceCoef)
+                        .splineToLinearHeading(new Pose2d(-12 * 4, yDelta, Math.toRadians(180)), Math.toRadians(0))
+                ;
+            }
+            navBuilder = navBuilder.lineToX(24)
+                    .splineToLinearHeading(new Pose2d(startPose.position.x * (-1.3), startPose.position.y -  yDelta, Math.toRadians(180)), Math.toRadians(0));
+        }
         //////////////////////////////////////////////////////////
         Actions.runBlocking(navBuilder.build());
         //////////////////////////////////////////////////////////
