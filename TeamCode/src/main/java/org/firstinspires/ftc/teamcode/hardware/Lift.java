@@ -11,11 +11,11 @@ public class Lift {
     }
 
     public void up() {
-        liftMotor.setPower(-0.9);
+        liftMotor.setPower(-0.3);
     }
 
     public void down() {
-        liftMotor.setPower(0.9);
+        liftMotor.setPower(0.3);
     }
 
     public void stop() {

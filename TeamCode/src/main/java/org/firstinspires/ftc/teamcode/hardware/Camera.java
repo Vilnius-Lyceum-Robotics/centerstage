@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -18,12 +19,16 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.util.ArrayList;
 import java.util.List;
 
+@Config
 public class Camera {
     AprilTagProcessor aprilTagProcessor;
     TfodProcessor tfodProcessor;
     VisionPortal visionPortal;
 
     public List<AprilTagDetection> aprilTagDetections = new ArrayList<>();
+
+
+    public static PropPos defaultPosition = PropPos.LEFT;
 
     public enum PropPos {
         LEFT,
@@ -32,7 +37,7 @@ public class Camera {
     }
 
     public boolean hasTeamProp = false;
-    public PropPos teamPropPos = PropPos.RIGHT;
+    public PropPos teamPropPos = defaultPosition;
 
     public Camera(HardwareMap hardwareMap, boolean alliance) {
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam");
@@ -120,8 +125,8 @@ public class Camera {
 
                 System.out.println("DETECTED");
                 double f = recognition.estimateAngleToObject(AngleUnit.DEGREES);
-                if (f < 11 - f) teamPropPos = PropPos.LEFT;
-                else teamPropPos = PropPos.CENTER;
+                if (f < 11 - f) teamPropPos = PropPos.CENTER;
+                else teamPropPos = PropPos.RIGHT;
                 System.out.println(f);
                 System.out.println(teamPropPos);
             }
