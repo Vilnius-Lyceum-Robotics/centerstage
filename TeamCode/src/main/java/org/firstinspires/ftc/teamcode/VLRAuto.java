@@ -1,28 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Arclength;
-import com.acmerobotics.roadrunner.InstantFunction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Pose2dDual;
-import com.acmerobotics.roadrunner.PosePath;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TrajectoryBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.hardware.Camera;
 import org.firstinspires.ftc.teamcode.hardware.ClawNArm;
-import org.firstinspires.ftc.teamcode.hardware.Controls;
 import org.firstinspires.ftc.teamcode.helpers.AutoConfig;
 import org.firstinspires.ftc.teamcode.helpers.PreGameConfigurator;
 
@@ -33,8 +20,7 @@ public class VLRAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         AutoConfig cfg = new AutoConfig();
-        PreGameConfigurator configurator = new PreGameConfigurator(telemetry, new Controls(gamepad1, hardwareMap.get(IMU.class, "imu")));
-
+        PreGameConfigurator configurator = new PreGameConfigurator(telemetry);
         boolean isRed = configurator.upDownSelect("Red", "Blue");
         boolean isNearBackboard = configurator.leftRightSelect("Backboard", "Audience");
 

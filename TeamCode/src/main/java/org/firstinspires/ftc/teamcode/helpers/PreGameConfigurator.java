@@ -2,28 +2,29 @@ package org.firstinspires.ftc.teamcode.helpers;
 
 import static java.lang.Thread.sleep;
 
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.hardware.Controls;
 
 public class PreGameConfigurator {
     Telemetry telemetry;
-    Controls controls;
+    GamepadEx gamepadEx;
 
-    public PreGameConfigurator(Telemetry telemetry, Controls controls) {
+    public PreGameConfigurator(Telemetry telemetry) {
         this.telemetry = telemetry;
-        this.controls = controls;
     }
 
     public boolean leftRightSelect(String trueOption, String falseOption) throws InterruptedException {
         telemetry.addData("CFG", trueOption + " (left) or " + falseOption + " (right)?");
         telemetry.update();
         while (true) {
-            if (controls.getDpadLeft()) {
+            if (gamepadEx.getButton(GamepadKeys.Button.DPAD_LEFT)) {
                 telemetry.addData("CFG", "Picked " + trueOption + " - true");
                 telemetry.update();
                 sleep(1000);
                 return true;
-            } else if (controls.getDpadRight()) {
+            } else if (gamepadEx.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
                 telemetry.addData("CFG", "Picked " + falseOption + " - false");
                 telemetry.update();
                 sleep(1000);
@@ -37,12 +38,12 @@ public class PreGameConfigurator {
         telemetry.addData("CFG", trueOption + " (up) or " + falseOption + " (down)?");
         telemetry.update();
         while (true) {
-            if (controls.getDpadUp()) {
+            if (gamepadEx.getButton(GamepadKeys.Button.DPAD_UP)) {
                 telemetry.addData("CFG", "Picked " + trueOption + " - true");
                 telemetry.update();
                 sleep(1000);
                 return true;
-            } else if (controls.getDpadDown()) {
+            } else if (gamepadEx.getButton(GamepadKeys.Button.DPAD_DOWN)) {
                 telemetry.addData("CFG", "Picked " + falseOption + " - false");
                 telemetry.update();
                 sleep(1000);
