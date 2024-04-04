@@ -1,0 +1,14 @@
+# Main opmodes
+**/VLRTeleOp.java   @xE1H
+**/VLRAuto.java     @xE1H
+
+# Crucial for auto opmode
+**/helpers/AutoConfig.java @xE1H
+**/hardware/Camera.java @xE1H
+
+# Roadrunner crucial code
+**/drivetrain/*     @xE1H
+
+
+
+/.github/CODEOWNERS @xE1H
