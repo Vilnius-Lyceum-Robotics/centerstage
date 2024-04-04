@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Config
-public class Camera {
+public class FrontCamera {
     AprilTagProcessor aprilTagProcessor;
     TfodProcessor tfodProcessor;
     VisionPortal visionPortal;
@@ -39,8 +39,10 @@ public class Camera {
     public boolean hasTeamProp = false;
     public PropPos teamPropPos = defaultPosition;
 
-    public Camera(HardwareMap hardwareMap, boolean alliance) {
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam");
+    public double propAng = 0;
+
+    public FrontCamera(HardwareMap hardwareMap, boolean alliance) {
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "WebcamFront");
         AprilTagLibrary tagLibrary = new AprilTagLibrary.Builder()
                 .addTag(1, "Blue Alliance Left", 5.08, DistanceUnit.CM)
                 .addTag(2, "Blue Alliance Center", 5.08, DistanceUnit.CM)
@@ -80,8 +82,6 @@ public class Camera {
                     .setTrackerMinSize(16)
                     .setModelAssetName("red.tflite")
                     .setModelLabels(LABELS)
-                    .setTrackerMinCorrelation(0.5f)
-                    .setTrackerMarginalCorrelation(0.6f)
                     .build();
         }
 
@@ -125,8 +125,9 @@ public class Camera {
 
                 System.out.println("DETECTED");
                 double f = recognition.estimateAngleToObject(AngleUnit.DEGREES);
-                if (f < 11 - f) teamPropPos = PropPos.CENTER;
+                if (f < -2) teamPropPos = PropPos.CENTER;
                 else teamPropPos = PropPos.RIGHT;
+                propAng = f;
                 System.out.println(f);
                 System.out.println(teamPropPos);
             }
@@ -140,5 +141,9 @@ public class Camera {
         for (int i = 0; i < times; i++) {
             process();
         }
+    }
+
+    public void close() {
+        visionPortal.close();
     }
 }

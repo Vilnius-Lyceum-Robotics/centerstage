@@ -7,10 +7,10 @@ public class Plane {
     Servo planeServo;
     public Plane(HardwareMap hardwareMap) {
         planeServo = hardwareMap.get(Servo.class, "PlaneServo");
-        planeServo.setPosition(0.6);
+        planeServo.setPosition(0);
     }
 
     public void launch() {
-        planeServo.setPosition(0.5);
+        planeServo.setPosition(0.25);
     }
 }

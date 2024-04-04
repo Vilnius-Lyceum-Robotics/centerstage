@@ -12,6 +12,7 @@ public class Chassis {
     DcMotor MotorRightFront;
 
     private double power = 0.2;
+    private double xPower = 1;
 
     public Chassis(HardwareMap hardwareMap) {
 
@@ -47,11 +48,10 @@ public class Chassis {
     public void drive(Pose2d vector) {
         double[] wheelSpeeds = new double[4]; // Front left, front right, back right, back left
 
-
-        wheelSpeeds[0] = vector.heading.imag - vector.position.x + vector.position.y; // Back Left
-        wheelSpeeds[1] = -vector.heading.imag - vector.position.x + vector.position.y; // Front Left
-        wheelSpeeds[2] = -vector.heading.imag + vector.position.x + vector.position.y; // Back Right
-        wheelSpeeds[3] = vector.heading.imag + vector.position.x + vector.position.y; // Front Right
+        wheelSpeeds[0] = vector.heading.imag - vector.position.x * xPower + vector.position.y; // Back Left
+        wheelSpeeds[1] = -vector.heading.imag - vector.position.x * xPower + vector.position.y; // Front Left
+        wheelSpeeds[2] = -vector.heading.imag + vector.position.x * xPower + vector.position.y; // Back Right
+        wheelSpeeds[3] = vector.heading.imag + vector.position.x * xPower + vector.position.y; // Front Right
 
 
         // Normalizing speeds if any of them exceed the maximum speed of 1
@@ -74,5 +74,7 @@ public class Chassis {
         power = pwr;
     }
 
-
+    public void setXPower(double xPwr) {
+        xPower = xPwr;
+    }
 }
