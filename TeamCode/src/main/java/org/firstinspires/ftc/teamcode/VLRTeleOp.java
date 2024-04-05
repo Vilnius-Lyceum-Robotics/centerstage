@@ -35,10 +35,10 @@ public class VLRTeleOp extends LinearOpMode {
 
             switch (gamepadEx) {
                 case gamepadEx.getButton(GamepadKeys.Button.DPAD_UP):
-                    lift.up();
+                    lift.extend();
                     break;
                 case gamepadEx.getButton(GamepadKeys.Button.DPAD_DOWN):
-                    lift.down();
+                    lift.retract();
                     break;
             }
         }
