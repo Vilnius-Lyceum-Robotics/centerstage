@@ -12,12 +12,20 @@ public class Lift {
     private TouchSensor limitSwitch;
     private Claw claw;
     private boolean clawWasDown;
+<<<<<<< HEAD
     private static final int CALL_INTERVAL = 4; // 20 milliseconds
+=======
+    private static final int CALL_INTERVAL = 20; // 20 milliseconds
+>>>>>>> cb46b9ea06575590b43e8b15191522048e662efa
     private static final int LIFT_TIMEOUT = 1000 * 20; // 20 seconds
     private int currentTimeout; 
     private int extendedComponentId;
     // private static final ArrayList extensionValues = new ArrayList<Integer>(List.of(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500, 3900, 4300));
+<<<<<<< HEAD
     private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));
+=======
+    private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500, 3900, 4300));
+>>>>>>> cb46b9ea06575590b43e8b15191522048e662efa
 
     public Lift(HardwareMap hardwareMap, Claw inheritedClaw) {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
