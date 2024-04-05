@@ -26,22 +26,30 @@ public class Lift {
         extendedComponentId = 0;
     }
 
-    public void extendComponent() {
-        extendedComponentId++;
+    public void extend(){
         if(extendedComponentId > extensionValues.size()) {
             return;
         }
-        liftMotor.setTargetPosition(extensionValues.get(extendedComponentId - 1));
-        liftMotor.setPower(1);
+        extendedComponentId++;
     }
 
-    public void retract() {
-        liftMotor.setTargetPosition(0);
-        while (liftMotor.isBusy()) {
-            if(limitSwitch.isPressed()) {
-                liftMotor.setPower(0);
-                break;
-            }
+    public void retract(){
+        if(extendedComponentId < 0) {
+            return;
         }
+        extendedComponentId--;
+    }
+
+    public void run() {
+        if (extendedComponentId == 0) {
+            liftMotor.setTargetPosition(0);
+            liftMotor.setPower(1);
+            if (limitSwitch.isPressed()) {
+                liftMotor.setPower(0);
+            }
+            return;
+        }
+        liftMotor.setTargetPosition(extensionValues.get(extendedComponentId));
+        liftMotor.setPower(1);
     }
 }

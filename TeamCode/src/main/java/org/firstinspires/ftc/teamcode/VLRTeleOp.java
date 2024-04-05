@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.hardware.PullUp;
 public class VLRTeleOp extends LinearOpMode {
     private Chassis chassis;
     private GamepadEx gamepadEx;
-
     private PullUp pullup;
+    private Lift lift;
 
     @Override
     public void runOpMode() {
@@ -24,6 +24,7 @@ public class VLRTeleOp extends LinearOpMode {
 
         gamepadEx = new GamepadEx(gamepad1);
         pullup = new PullUp(hardwareMap);
+        lift = new Lift(hardwareMap);
         waitForStart();
 
         while (opModeIsActive()) {
@@ -32,9 +33,14 @@ public class VLRTeleOp extends LinearOpMode {
 
             chassis.drive(new Pose2d(gamepadEx.getLeftX(), gamepadEx.getLeftY(), gamepadEx.getRightX()));
 
-            if (gamepadEx.getButton(GamepadKeys.Button.DPAD_UP)) pullup.up();
-            else if (gamepadEx.getButton(GamepadKeys.Button.DPAD_DOWN)) pullup.down();
-            else pullup.stop();
+            switch (gamepadEx) {
+                case gamepadEx.getButton(GamepadKeys.Button.DPAD_UP):
+                    lift.up();
+                    break;
+                case gamepadEx.getButton(GamepadKeys.Button.DPAD_DOWN):
+                    lift.down();
+                    break;
+            }
         }
     }
 }
