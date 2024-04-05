@@ -11,7 +11,7 @@ public class Lift {
     private DcMotor liftMotor;
     private TouchSensor limitSwitch;
     private Claw claw;
-    private bool clawWasDown;
+    private boolean clawWasDown;
     private static final int CALL_INTERVAL = 20; // 20 milliseconds
     private static final int LIFT_TIMEOUT = 1000 * 20; // 20 seconds
     private int currentTimeout; 
