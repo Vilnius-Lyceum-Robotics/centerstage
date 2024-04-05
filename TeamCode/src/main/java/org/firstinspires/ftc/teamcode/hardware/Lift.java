@@ -13,7 +13,7 @@ public class Lift {
     private Claw claw;
     private int extendedComponentId;
     // private static final ArrayList extensionValues = new ArrayList<Integer>(List.of(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500, 3900, 4300));
-    private static final ArrayList extensionValues = Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500, 3900, 4300);
+    private static final ArrayList<Integer> extensionValues = Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500, 3900, 4300);
 
     public Lift(HardwareMap hardwareMap, Claw inheritedClaw) {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
