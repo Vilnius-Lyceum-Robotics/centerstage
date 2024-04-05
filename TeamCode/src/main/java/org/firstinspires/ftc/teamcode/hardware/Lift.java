@@ -43,12 +43,12 @@ public class Lift {
         if(extendedComponentId == 0 && liftMotor.getCurrentPosition() == 0){
             return;
         }
-        liftMotor.setTargetPosition(extensionValues.indexOf(extendedComponentId));
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotor.setPower(1);
         if(extendedComponentId == 0 && limitSwitch.isPressed()) {
             liftMotor.setPower(0);
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
+        liftMotor.setTargetPosition(extensionValues.indexOf(extendedComponentId));
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor.setPower(1);
     }
 }
