@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Claw;
 
 import com.sun.tools.javac.util.List;
-
 import java.util.ArrayList;
 
 public class Lift {
@@ -14,7 +13,7 @@ public class Lift {
     private TouchSensor limitSwitch;
     private Claw claw;
     private int extendedComponentId;
-    private static final ArrayList extensionValues = new ArrayList<>(List.of(0, 1, 2));
+    private static final ArrayList extensionValues = new ArrayList<>(List.of(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500, 3900, 4300));
 
     public Lift(HardwareMap hardwareMap, Claw inheritedClaw) {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
