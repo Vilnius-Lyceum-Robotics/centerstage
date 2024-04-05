@@ -20,8 +20,7 @@ public class Lift {
         limitSwitch = hardwareMap.get(TouchSensor.class, "limitSwitch");
         // reset encoder
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setTargetPosition(0);
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         extendedComponentId = 0;
     }
@@ -41,15 +40,12 @@ public class Lift {
     }
 
     public void run() {
-        if (extendedComponentId == 0) {
-            liftMotor.setTargetPosition(0);
-            liftMotor.setPower(1);
-            if (limitSwitch.isPressed()) {
-                liftMotor.setPower(0);
-            }
-            return;
-        }
         liftMotor.setTargetPosition(extensionValues.indexOf(extendedComponentId));
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setPower(1);
+        if(extendedComponentId == 0 && limitSwitch.isPressed()) {
+            liftMotor.setPower(0);
+            liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
     }
 }
