@@ -39,6 +39,7 @@ public class VLRTeleOp extends LinearOpMode {
             } else if (gamepadEx.getButton(GamepadKeys.Button.DPAD_DOWN)) {
                 lift.retract();
             }
+            lift.run();
         }
     }
 }
