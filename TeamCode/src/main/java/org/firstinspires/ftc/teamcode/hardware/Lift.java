@@ -53,7 +53,7 @@ public class Lift {
         else{
             claw.rotatorUp();
         }
-        liftMotor.setTargetPosition((Integer) extensionValues.get(extendedComponentId));
+        liftMotor.setTargetPosition(-((Integer) extensionValues.get(extendedComponentId)));
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setPower(1);
     }
