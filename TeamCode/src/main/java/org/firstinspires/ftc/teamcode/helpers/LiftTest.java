@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.helpers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+@TeleOp
 public class LiftTest extends LinearOpMode {
     @Override
     public void runOpMode() {
@@ -15,13 +17,17 @@ public class LiftTest extends LinearOpMode {
 
         while (!isStopRequested()) {
             if (gamepad1.dpad_up) {
-                pos += 1;
+                pos += 10;
             } else if (gamepad1.dpad_down) {
-                pos -= 1;
+                pos -= 10;
             }
             telemetry.addData("Target position", pos);
             telemetry.addData("Lift value", lift.getCurrentPosition());
             telemetry.update();
+
+            lift.setTargetPosition(pos);
+            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift.setPower(1);
         }
     }
 }
