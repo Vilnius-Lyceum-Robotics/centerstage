@@ -19,9 +19,7 @@ public class Lift {
         limitSwitch = hardwareMap.get(TouchSensor.class, "limitSwitch");
         // reset encoder
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        liftMotor.setTargetPosition(0);
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         extendedComponentId = 0;
     }
