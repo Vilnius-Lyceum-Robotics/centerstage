@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.outoftheboxrobotics.photoncore.Photon;
 
 import org.firstinspires.ftc.teamcode.hardware.Chassis;
+import org.firstinspires.ftc.teamcode.hardware.Claw;
 import org.firstinspires.ftc.teamcode.hardware.PullUp;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
 
@@ -18,6 +19,7 @@ public class VLRTeleOp extends LinearOpMode {
     private GamepadEx gamepadEx;
     private PullUp pullup;
     private Lift lift;
+    private Claw claw;
 
     @Override
     public void runOpMode() {
@@ -26,6 +28,7 @@ public class VLRTeleOp extends LinearOpMode {
         gamepadEx = new GamepadEx(gamepad1);
         pullup = new PullUp(hardwareMap);
         lift = new Lift(hardwareMap);
+        claw = new Claw(hardwareMap);
         waitForStart();
 
         while (opModeIsActive()) {
@@ -33,13 +36,20 @@ public class VLRTeleOp extends LinearOpMode {
             chassis.setPower(1 - gamepadEx.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 0.75);
 
             chassis.drive(new Pose2d(gamepadEx.getLeftX(), gamepadEx.getLeftY(), gamepadEx.getRightX()));
+            lift.run();
 
-            if (gamepadEx.getButton(GamepadKeys.Button.DPAD_UP)) {
+
+            if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
                 lift.extend();
-            } else if (gamepadEx.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            } else if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
                 lift.retract();
             }
-            lift.run();
+
+            if (gamepadEx.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
+                claw.toggleLeft();
+            } else if (gamepadEx.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
+                claw.toggleRight();
+            }
         }
     }
 }

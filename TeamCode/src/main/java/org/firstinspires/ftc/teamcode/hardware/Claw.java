@@ -24,29 +24,29 @@ public class Claw {
 
     public void toggleLeft() {
         if (stateLeft == ClawState.CLOSED) {
-            left.setPosition(0.5);
+            left.setPosition(1);
             stateLeft = ClawState.OPEN;
         } else {
-            left.setPosition(0);
+            left.setPosition(0.57);
             stateLeft = ClawState.CLOSED;
         }
     }
 
     public void toggleRight() {
         if (stateRight == ClawState.CLOSED) {
-            right.setPosition(0.5);
+            right.setPosition(0);
             stateRight = ClawState.OPEN;
         } else {
-            right.setPosition(0);
+            right.setPosition(0.22);
             stateRight = ClawState.CLOSED;
         }
     }
 
     public void rotatorDown() {
-        rotator.setPosition(0.5);
+        rotator.setPosition(0.20);
     }
 
     public void rotatorUp() {
-        rotator.setPosition(0);
+        rotator.setPosition(1);
     }
 }
