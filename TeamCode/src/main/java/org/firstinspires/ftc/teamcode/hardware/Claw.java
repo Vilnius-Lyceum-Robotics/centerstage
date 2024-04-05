@@ -18,8 +18,6 @@ public class Claw {
         left = hardwareMap.get(Servo.class, "leftClaw");
         right = hardwareMap.get(Servo.class, "rightClaw");
         rotator = hardwareMap.get(Servo.class, "rotator");
-
-
     }
 
     public void toggleLeft() {

@@ -27,8 +27,8 @@ public class VLRTeleOp extends LinearOpMode {
 
         gamepadEx = new GamepadEx(gamepad1);
         pullup = new PullUp(hardwareMap);
-        lift = new Lift(hardwareMap);
         claw = new Claw(hardwareMap);
+        lift = new Lift(hardwareMap, claw);
         waitForStart();
 
         while (opModeIsActive()) {

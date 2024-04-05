@@ -3,21 +3,24 @@ package org.firstinspires.ftc.teamcode.hardware;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Claw;
+
 import com.sun.tools.javac.util.List;
 
 import java.util.ArrayList;
 
 public class Lift {
-    DcMotor liftMotor;
-    TouchSensor limitSwitch;
+    private DcMotor liftMotor;
+    private TouchSensor limitSwitch;
+    private Claw claw;
     private int extendedComponentId;
     private static final ArrayList extensionValues = new ArrayList<>(List.of(0, 1, 2));
 
-
-    public Lift(HardwareMap hardwareMap) {
+    public Lift(HardwareMap hardwareMap, Claw inheritedClaw) {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         limitSwitch = hardwareMap.get(TouchSensor.class, "limitSwitch");
+        claw = inheritedClaw;
         // reset encoder
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -26,14 +29,14 @@ public class Lift {
     }
 
     public void extend(){
-        if(extendedComponentId > extensionValues.size()) {
+        if(extendedComponentId >= extensionValues.size() - 1) {
             return;
         }
         extendedComponentId++;
     }
 
     public void retract(){
-        if(extendedComponentId < 0) {
+        if(extendedComponentId <= 0) {
             return;
         }
         extendedComponentId--;
@@ -44,6 +47,12 @@ public class Lift {
             liftMotor.setPower(0);
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             return;
+        }
+        if(extendedComponentId <= 1){
+            claw.rotatorDown();
+        }
+        else{
+            claw.rotatorUp();
         }
         liftMotor.setTargetPosition(extensionValues.indexOf(extendedComponentId));
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
