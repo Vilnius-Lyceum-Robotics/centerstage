@@ -12,7 +12,7 @@ public class ServoTester extends LinearOpMode {
     public void runOpMode() {
         waitForStart();
 
-        String[] servos = {"Arm", "LeftClaw", "RightClaw", "PlaneServo"};
+        String[] servos = {"leftClaw", "rightClaw", "rotator"};
         double[] powers = new double[servos.length];
         int i = 0;
 
