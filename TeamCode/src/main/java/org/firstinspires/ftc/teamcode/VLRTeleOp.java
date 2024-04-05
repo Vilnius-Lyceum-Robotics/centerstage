@@ -47,7 +47,8 @@ public class VLRTeleOp extends LinearOpMode {
 
             if (gamepadEx.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
                 claw.toggleLeft();
-            } else if (gamepadEx.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
+            }
+            if (gamepadEx.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
                 claw.toggleRight();
             }
         }

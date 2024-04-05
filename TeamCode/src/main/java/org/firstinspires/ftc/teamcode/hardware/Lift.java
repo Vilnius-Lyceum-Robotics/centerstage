@@ -11,13 +11,13 @@ public class Lift {
     private DcMotor liftMotor;
     private TouchSensor limitSwitch;
     private Claw claw;
-    private bool clawWasDown;
-    private static final int CALL_INTERVAL = 20; // 20 milliseconds
+    private boolean clawWasDown;
+    private static final int CALL_INTERVAL = 4; // 20 milliseconds
     private static final int LIFT_TIMEOUT = 1000 * 20; // 20 seconds
     private int currentTimeout; 
     private int extendedComponentId;
     // private static final ArrayList extensionValues = new ArrayList<Integer>(List.of(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500, 3900, 4300));
-    private static final ArrayList<Integer> extensionValues = Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500, 3900, 4300);
+    private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));
 
     public Lift(HardwareMap hardwareMap, Claw inheritedClaw) {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
@@ -35,12 +35,20 @@ public class Lift {
         if(extendedComponentId >= extensionValues.size() - 1) {
             return;
         }
+        if (extendedComponentId == 1) {
+            claw.setLeftPos(Claw.ClawState.CLOSED);
+            claw.setRightPos(Claw.ClawState.CLOSED);
+        }
         extendedComponentId++;
     }
 
     public void retract(){
         if(extendedComponentId <= 0) {
             return;
+        }
+        if (extendedComponentId == 2) {
+            claw.setLeftPos(Claw.ClawState.CLOSED);
+            claw.setRightPos(Claw.ClawState.CLOSED);
         }
         extendedComponentId--;
     }
@@ -51,21 +59,22 @@ public class Lift {
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             return;
         }
-        if(extendedComponentId <= 1 && !clawWasDown){
+        if (extendedComponentId <= 1) {
             claw.rotatorDown();
-            clawWasDown = true;
-            currentTimeout = LIFT_TIMEOUT;
+            if (!clawWasDown) {
+                clawWasDown = true;
+                currentTimeout = LIFT_TIMEOUT;
+            }
         }
-        else if(clawWasDown){
+        else {
             claw.rotatorUp();
             clawWasDown = false;
-            currentTimeout = LIFT_TIMEOUT;
         }
-        if(currentTimeout > 0){
-            currentTimeout-=CALL_INTERVAL;
+        if(currentTimeout > 0) {
+            currentTimeout -= CALL_INTERVAL;
             return;
         }
-        
+
         liftMotor.setTargetPosition(-((Integer) extensionValues.get(extendedComponentId)));
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setPower(1);
