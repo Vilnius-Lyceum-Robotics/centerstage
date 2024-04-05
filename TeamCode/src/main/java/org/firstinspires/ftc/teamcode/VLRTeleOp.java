@@ -9,6 +9,7 @@ import com.outoftheboxrobotics.photoncore.Photon;
 
 import org.firstinspires.ftc.teamcode.hardware.Chassis;
 import org.firstinspires.ftc.teamcode.hardware.PullUp;
+import org.firstinspires.ftc.teamcode.hardware.Lift;
 
 @Photon
 @TeleOp(name = "VLRTeleOp")
@@ -33,13 +34,10 @@ public class VLRTeleOp extends LinearOpMode {
 
             chassis.drive(new Pose2d(gamepadEx.getLeftX(), gamepadEx.getLeftY(), gamepadEx.getRightX()));
 
-            switch (gamepadEx) {
-                case gamepadEx.getButton(GamepadKeys.Button.DPAD_UP):
-                    lift.extend();
-                    break;
-                case gamepadEx.getButton(GamepadKeys.Button.DPAD_DOWN):
-                    lift.retract();
-                    break;
+            if (gamepadEx.getButton(GamepadKeys.Button.DPAD_UP)) {
+                lift.extend();
+            } else if (gamepadEx.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                lift.retract();
             }
         }
     }
