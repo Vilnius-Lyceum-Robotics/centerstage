@@ -3,14 +3,15 @@ package org.firstinspires.ftc.teamcode.hardware;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.sun.tools.javac.util.List;
+
+import java.util.ArrayList;
 
 public class Lift {
     DcMotor liftMotor;
     TouchSensor limitSwitch;
-    private static final int TICKS_PER_REVOLUTION = 28;
-    private static final int REVOLUTIONS_UNTIL_COMPONENT_EXTENSION = 1000;
     private int extendedComponentId;
-    private static final ArrayList<Integer> extensionValues = new ArrayList<>(List.of(0, 1, 2));
+    private static final ArrayList extensionValues = new ArrayList<>(List.of(0, 1, 2));
 
 
     public Lift(HardwareMap hardwareMap) {
@@ -49,7 +50,7 @@ public class Lift {
             }
             return;
         }
-        liftMotor.setTargetPosition(extensionValues.get(extendedComponentId));
+        liftMotor.setTargetPosition(extensionValues.indexOf(extendedComponentId));
         liftMotor.setPower(1);
     }
 }
