@@ -43,7 +43,7 @@ public class Lift {
         if(extendedComponentId == 0 && liftMotor.getCurrentPosition() == 0){
             return;
         }
-        if(extendedComponentId == 0 && limitSwitch.isPressed()) {
+        else if(extendedComponentId == 0 && limitSwitch.isPressed()) {
             liftMotor.setPower(0);
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
