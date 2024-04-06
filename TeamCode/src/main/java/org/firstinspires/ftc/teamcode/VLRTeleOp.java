@@ -36,7 +36,7 @@ public class VLRTeleOp extends LinearOpMode {
             chassis.setPower(1 - gamepadEx.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 0.75);
 
             chassis.drive(new Pose2d(gamepadEx.getLeftX(), gamepadEx.getLeftY(), gamepadEx.getRightX()));
-            lift.run();
+            lift.process();
 
 
             if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {

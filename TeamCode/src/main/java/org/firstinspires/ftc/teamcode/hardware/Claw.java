@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Claw {
     Servo left, right, rotator;
 
-    enum ClawState {
+    public enum ClawState {
         OPEN,
         CLOSED
     }

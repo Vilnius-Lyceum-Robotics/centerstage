@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import static java.lang.Thread.sleep;
+
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -52,7 +58,14 @@ public class Lift {
         extendedComponentId--;
     }
 
-    public void run() {
+    public void setExtension(int id) {
+        if (id < 0 || id >= extensionValues.size()) {
+            return;
+        }
+        extendedComponentId = id;
+    }
+
+    public void process() {
         if(extendedComponentId == 0 && limitSwitch.isPressed()) {
             liftMotor.setPower(0);
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -79,5 +92,18 @@ public class Lift {
         liftMotor.setPower(1);
     }
 
+    public class AutonomousLift implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            process();
+            return true;
+        }
+    }
 
+    public Action autonomous() {
+        // Lift loop for autonomous using Roadrunner
+        // https://rr.brott.dev/docs/v1-0/actions/
+
+        return new AutonomousLift();
+    }
 }
