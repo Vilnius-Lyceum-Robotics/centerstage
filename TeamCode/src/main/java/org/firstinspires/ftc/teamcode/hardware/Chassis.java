@@ -64,10 +64,10 @@ public class Chassis {
             }
         }
 
-        MotorLeftBack.setPower(wheelSpeeds[0] * power);
-        MotorLeftFront.setPower(-wheelSpeeds[1] * power);
-        MotorRightBack.setPower(wheelSpeeds[2] * power);
-        MotorRightFront.setPower(-wheelSpeeds[3] * power);
+        MotorLeftBack.setPower(-wheelSpeeds[0] * power);
+        MotorLeftFront.setPower(wheelSpeeds[1] * power);
+        MotorRightBack.setPower(-wheelSpeeds[2] * power);
+        MotorRightFront.setPower(wheelSpeeds[3] * power);
     }
 
     public void setPower(double pwr) {
