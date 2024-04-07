@@ -9,28 +9,24 @@ import com.outoftheboxrobotics.photoncore.Photon;
 
 import org.firstinspires.ftc.teamcode.hardware.Chassis;
 import org.firstinspires.ftc.teamcode.hardware.Claw;
-import org.firstinspires.ftc.teamcode.hardware.Claw;
+import org.firstinspires.ftc.teamcode.hardware.DistanceSensors;
 import org.firstinspires.ftc.teamcode.hardware.PullUp;
-import org.firstinspires.ftc.teamcode.hardware.Lift;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
 
 @Photon
 @TeleOp(name = "VLRTeleOp")
 public class VLRTeleOp extends LinearOpMode {
-    private Chassis chassis;
-    private GamepadEx gamepadEx;
-    private PullUp pullup;
-    private Lift lift;
-    private Claw claw;
 
     @Override
     public void runOpMode() {
-        chassis = new Chassis(hardwareMap);
+        Chassis chassis = new Chassis(hardwareMap);
 
-        gamepadEx = new GamepadEx(gamepad1);
-        pullup = new PullUp(hardwareMap);
-        claw = new Claw(hardwareMap);
-        lift = new Lift(hardwareMap, claw);
+        GamepadEx gamepadEx = new GamepadEx(gamepad1);
+        PullUp pullup = new PullUp(hardwareMap);
+        Claw claw = new Claw(hardwareMap);
+        Lift lift = new Lift(hardwareMap, claw);
+        DistanceSensors distanceSensors = new DistanceSensors(hardwareMap);
+
         waitForStart();
 
         while (opModeIsActive()) {
@@ -53,6 +49,14 @@ public class VLRTeleOp extends LinearOpMode {
             if (gamepadEx.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
                 claw.toggleRight();
             }
+            distanceSensors.process();
+
+//            telemetry.addData("Distance between sensors",  "%.2f %.2f", distanceSensors.getMinDistance(), distanceSensors.getMaxDistance());
+            telemetry.addData("Distance between sensors",  "%.2f %.2f", distanceSensors.leftDistance.get(), distanceSensors.rightDistance.get());
+            telemetry.addData("Angle between sensors", "%.2f", distanceSensors.getAngle());
+            telemetry.update();
+//            System.out.println("Distance between sensors: " + distanceSensors.getRawLeft() + " " + distanceSensors.getRawRight());
+            //System.out.println("Angle between sensors: " + distanceSensors.getAngle());
         }
     }
 }

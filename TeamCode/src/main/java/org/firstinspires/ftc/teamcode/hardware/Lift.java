@@ -18,8 +18,8 @@ public class Lift {
     private TouchSensor limitSwitch;
     private Claw claw;
     private boolean clawWasDown;
-    private static final int CALL_INTERVAL = 4; // 20 milliseconds
-    private static final int LIFT_TIMEOUT = 1000 * 20; // 20 seconds
+    private static final int CALL_INTERVAL = 4;
+    private static final int LIFT_TIMEOUT = 2500;
     private int currentTimeout; 
     private int extendedComponentId;
     private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));

@@ -33,22 +33,22 @@ public class Claw {
     }
 
     public void setRightPos(ClawState state) {
-        if (state == ClawState.CLOSED) right.setPosition(0.22);
+        if (state == ClawState.CLOSED) right.setPosition(0.25);
         else right.setPosition(0);
         stateRight = state;
     }
 
     public void setLeftPos(ClawState state) {
-        if (state == ClawState.CLOSED) left.setPosition(0.57);
+        if (state == ClawState.CLOSED) left.setPosition(0.75);
         else left.setPosition(1);
         stateLeft = state;
     }
 
     public void rotatorDown() {
-        rotator.setPosition(0.20);
+        rotator.setPosition(0.07);
     }
 
     public void rotatorUp() {
-        rotator.setPosition(1);
+        rotator.setPosition(0.82);
     }
 }
