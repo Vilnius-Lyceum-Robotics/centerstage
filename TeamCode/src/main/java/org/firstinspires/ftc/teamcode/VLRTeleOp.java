@@ -22,8 +22,6 @@ public class VLRTeleOp extends LinearOpMode {
     private PullUp pullup;
     private Lift lift;
     private Claw claw;
-    private Lift lift;
-    private Claw claw;
 
     @Override
     public void runOpMode() {
