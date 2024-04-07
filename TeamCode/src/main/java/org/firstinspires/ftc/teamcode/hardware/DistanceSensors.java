@@ -21,7 +21,7 @@ public class DistanceSensors {
     }
 
     public double getAngle(DistanceUnit unit){
-        return Math.sin((getMaxDistance(unit) - getMinDistance(unit)) / DISTANCE_BETWEEN_SENSORS);
+        return Math.asin((getMaxDistance(unit) - getMinDistance(unit)) / DISTANCE_BETWEEN_SENSORS);
     }
 
 }
