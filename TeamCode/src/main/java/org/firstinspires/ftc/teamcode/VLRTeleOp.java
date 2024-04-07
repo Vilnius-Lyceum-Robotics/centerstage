@@ -31,8 +31,6 @@ public class VLRTeleOp extends LinearOpMode {
         pullup = new PullUp(hardwareMap);
         claw = new Claw(hardwareMap);
         lift = new Lift(hardwareMap, claw);
-        claw = new Claw(hardwareMap);
-        lift = new Lift(hardwareMap, claw);
         waitForStart();
 
         while (opModeIsActive()) {
@@ -43,18 +41,6 @@ public class VLRTeleOp extends LinearOpMode {
             lift.process();
 
 
-            if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
-                lift.extend();
-            } else if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
-                lift.retract();
-            }
-
-            if (gamepadEx.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
-                claw.toggleLeft();
-            }
-            if (gamepadEx.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
-                claw.toggleRight();
-            }
             if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
                 lift.extend();
             } else if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
