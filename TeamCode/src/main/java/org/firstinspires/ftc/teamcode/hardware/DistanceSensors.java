@@ -7,21 +7,31 @@ public class DistanceSensors {
     private DistanceSensor distanceSensorLeft;
     private DistanceSensor distanceSensorRight;
     private static final double DISTANCE_BETWEEN_SENSORS = 0.1; // unit of choice
+    
     public DistanceSensors(HardwareMap hardwareMap){
-        distanceSensorLeft = hardwareMap.get(DistanceSensor.class, "distance_sensor_left");
-        distanceSensorRight = hardwareMap.get(DistanceSensor.class, "distance_sensor_right");
+        distanceSensorLeft = hardwareMap.get(DistanceSensor.class, "distanceSensorLeft");
+        distanceSensorRight = hardwareMap.get(DistanceSensor.class, "distanceSensorRight");
     }
 
-    public double getMinDistance(DistanceUnit unit){
+    public double getMinDistance(){
+        return getMinDistance(DistanceUnit.INCH);
+    }
+    public double getMinDistance(DistanceUnit unit) {
         return Math.min(distanceSensorLeft.getDistance(unit), distanceSensorRight.getDistance(unit));
     }
 
+    public double getMaxDistance(){
+        return getMaxDistance(DistanceUnit.INCH);
+    }
     public double getMaxDistance(DistanceUnit unit){
         return Math.max(distanceSensorLeft.getDistance(unit), distanceSensorRight.getDistance(unit));
     }
 
+    public double getAngle(){
+        return getAngle(DistanceUnit.INCH);
+    }
     public double getAngle(DistanceUnit unit){
-        return Math.asin((getMaxDistance(unit) - getMinDistance(unit)) / DISTANCE_BETWEEN_SENSORS);
+        return Math.atan((getMaxDistance(unit) - getMinDistance(unit)) / DISTANCE_BETWEEN_SENSORS);
     }
 
 }
