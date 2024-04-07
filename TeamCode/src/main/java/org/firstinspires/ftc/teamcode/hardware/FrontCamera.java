@@ -30,6 +30,14 @@ public class FrontCamera {
 
     public static PropPos defaultPosition = PropPos.LEFT;
 
+    public double processBackboard(PropPos propPosition) {
+        return 0;
+    }
+
+    public double distToBoard() {
+        return 0;
+    }
+
     public enum PropPos {
         LEFT,
         CENTER,
