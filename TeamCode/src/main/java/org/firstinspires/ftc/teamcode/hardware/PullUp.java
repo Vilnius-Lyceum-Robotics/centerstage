@@ -6,8 +6,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class PullUp {
     DcMotor left;
     DcMotor right;
-    private static final int PULLUP_HEIGHT = 1000;
-    private boolean isUp = false;
+    enum State {
+        DOWN(0),
+        UP(3050),
+        PULLUP(600);
+
+        public final int value;
+        private State(int val) {
+            value = val;
+        }
+    }
+
+    State state = State.DOWN;
 
     public PullUp(HardwareMap hardwareMap) {
         left = hardwareMap.get(DcMotor.class, "leftPullup");
@@ -18,50 +28,57 @@ public class PullUp {
 
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        down();
     }
 
-    private void moveLeftMotor(int pos){
-        left.setTargetPosition(pos);
+    private void moveLeftMotor(int pos) {
+        left.setTargetPosition(-pos);
         left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         left.setPower(1);
     }
 
-    private void moveRightMotor(int pos){
+    private void moveRightMotor(int pos) {
         right.setTargetPosition(pos);
         right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right.setPower(1);
     }
 
     public void up() {
-        moveLeftMotor(PULLUP_HEIGHT);
-        moveRightMotor(PULLUP_HEIGHT);
-        isUp = true;
+        moveLeftMotor(State.UP.value);
+        moveRightMotor(State.UP.value);
+        state = State.UP;
     }
 
     public void down() {
-        moveLeftMotor(0);
-        moveRightMotor(0);
-        isUp = false;
+        moveLeftMotor(State.DOWN.value);
+        moveRightMotor(State.DOWN.value);
+        state = State.DOWN;
     }
 
-    public void toggle(){
-        if(isUp){
-            down();
-        } else {
-            up();
-        }
+    public void pullUp() {
+        moveLeftMotor(State.PULLUP.value);
+        moveRightMotor(State.PULLUP.value);
+        state = State.PULLUP;
     }
 
-    private void stopLeftMotor(){
+    public void toggle() {
+        if (state == State.DOWN) up();
+        else pullUp();
+
+    }
+
+    private void stopLeftMotor() {
         left.setPower(0);
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
-    private void stopRightMotor(){
+
+    private void stopRightMotor() {
         right.setPower(0);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    public void stop(){
+    public void stop() {
         stopLeftMotor();
         stopRightMotor();
     }
