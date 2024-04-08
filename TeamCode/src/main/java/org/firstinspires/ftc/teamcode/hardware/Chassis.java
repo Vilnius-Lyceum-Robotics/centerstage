@@ -12,7 +12,7 @@ public class Chassis {
     DcMotor MotorRightFront;
     DistanceSensors distanceSensors;
     private static final int calibrationDistance = 12; // inches
-    private static final double stoppingDistance = 2; // inches
+    private static final double stoppingDistance = 3; // inches
 
     private enum Mode {
         NORMAL,
@@ -79,7 +79,7 @@ public class Chassis {
 
         double leftPower;
         double rightPower;
-        if(currentMode == Mode.NORMAL){
+        if(currentMode == Mode.NORMAL || !distanceSensors.makesSense()){
             leftPower = power;
             rightPower = power;
         }
@@ -103,6 +103,13 @@ public class Chassis {
             } else {
                 decelCoefficient = 1 - Math.pow(3, stoppingDistance-lesserDistance);
             }
+
+            double vhi = vector.heading.imag + distanceSensors.getAngle() * vector.position.y / (Math.PI / 4);
+            vhi *= decelCoefficient;
+            wheelSpeeds[0] = vhi - vector.position.x * xPower + vector.position.y; // Back Left
+            wheelSpeeds[1] = -vhi - vector.position.x * xPower + vector.position.y; // Front Left
+            wheelSpeeds[2] = -vhi + vector.position.x * xPower + vector.position.y; // Back Right
+            wheelSpeeds[3] = vhi + vector.position.x * xPower + vector.position.y; // Front Right
 
             leftPower = leftDistance / greaterDistance * decelCoefficient;
             rightPower = rightDistance / greaterDistance * decelCoefficient;
