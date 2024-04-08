@@ -27,9 +27,9 @@ public class Chassis {
     public Chassis(HardwareMap hardwareMap, DistanceSensors distanceSensors) {
 
         MotorLeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
-        MotorLeftFront = hardwareMap.get(DcMotor.class, "LeftFront");
+        MotorLeftFront = hardwareMap.get(DcMotor.class, "RightFront");
         MotorRightBack = hardwareMap.get(DcMotor.class, "RightBack");
-        MotorRightFront = hardwareMap.get(DcMotor.class, "RightFront");
+        MotorRightFront = hardwareMap.get(DcMotor.class, "LeftFront");
 
         MotorLeftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -106,9 +106,9 @@ public class Chassis {
         }
 
         MotorLeftBack.setPower(-wheelSpeeds[0] * leftPower);
-        MotorLeftFront.setPower(wheelSpeeds[1] * leftPower);
+        MotorLeftFront.setPower(wheelSpeeds[1] * rightPower);
         MotorRightBack.setPower(-wheelSpeeds[2] * rightPower);
-        MotorRightFront.setPower(wheelSpeeds[3] * rightPower);
+        MotorRightFront.setPower(wheelSpeeds[3] * leftPower);
     }
 
     public void setMode(Mode mode){
