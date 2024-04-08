@@ -19,7 +19,7 @@ public class Chassis {
         BACKBOARD
     }
 
-    private Mode currentMode;
+    public Mode currentMode;
 
     private double power = 0.2;
     private double xPower = 1;
