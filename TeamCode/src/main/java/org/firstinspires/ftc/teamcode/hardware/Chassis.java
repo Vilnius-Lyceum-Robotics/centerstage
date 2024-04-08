@@ -11,7 +11,7 @@ public class Chassis {
     DcMotor MotorRightBack;
     DcMotor MotorRightFront;
     DistanceSensors distanceSensors;
-    private static final int calibrationDistance = 4;
+    private static final int calibrationDistance = 4; // inches
 
     private enum Mode {
         NORMAL,
@@ -76,27 +76,30 @@ public class Chassis {
             }
         }
 
-        if (currentMode == Mode.NORMAL) {
-            MotorLeftBack.setPower(-wheelSpeeds[0] * power);
-            MotorLeftFront.setPower(wheelSpeeds[1] * power);
-            MotorRightBack.setPower(-wheelSpeeds[2] * power);
-            MotorRightFront.setPower(wheelSpeeds[3] * power);
-        } else {
+        double leftPower;
+        double rightPower;
+        if(currentMode == Mode.NORMAL){
+            leftPower = power;
+            rightPower = power;
+        }
+        else if(currentMode == Mode.BACKBOARD){
+
             double leftDistance = distanceSensors.leftDistance.get();
             double rightDistance = distanceSensors.rightDistance.get();
 
             double greaterDistance = Math.max(leftDistance, rightDistance);
 
-            double leftPower = leftDistance / greaterDistance;
-            double rightPower = rightDistance / greaterDistance;
-
-            MotorLeftBack.setPower(-wheelSpeeds[0] * leftPower);
-            MotorLeftFront.setPower(wheelSpeeds[1] * leftPower);
-            MotorRightBack.setPower(-wheelSpeeds[2] * rightPower);
-            MotorRightFront.setPower(wheelSpeeds[3] * rightPower);
+            leftPower = leftDistance / greaterDistance;
+            rightPower = rightDistance / greaterDistance;
+        } else{
+            leftPower = 0;
+            rightPower = 0;
         }
 
-
+        MotorLeftBack.setPower(-wheelSpeeds[0] * leftPower);
+        MotorLeftFront.setPower(wheelSpeeds[1] * leftPower);
+        MotorRightBack.setPower(-wheelSpeeds[2] * rightPower);
+        MotorRightFront.setPower(wheelSpeeds[3] * rightPower);
     }
 
     public void setMode(Mode mode){
