@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -22,7 +23,7 @@ public class VLRAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         AutoConfig cfg = new AutoConfig();
-        PreGameConfigurator configurator = new PreGameConfigurator(telemetry);
+        PreGameConfigurator configurator = new PreGameConfigurator(telemetry, new GamepadEx(gamepad1));
         boolean isRed = configurator.upDownSelect("Red", "Blue");
         boolean isNearBackboard = configurator.leftRightSelect("Backboard", "Audience");
 
