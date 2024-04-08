@@ -27,9 +27,9 @@ public class Chassis {
     public Chassis(HardwareMap hardwareMap, DistanceSensors distanceSensors) {
 
         MotorLeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
-        MotorLeftFront = hardwareMap.get(DcMotor.class, "RightFront");
+        MotorLeftFront = hardwareMap.get(DcMotor.class, "LeftFront");
         MotorRightBack = hardwareMap.get(DcMotor.class, "RightBack");
-        MotorRightFront = hardwareMap.get(DcMotor.class, "LeftFront");
+        MotorRightFront = hardwareMap.get(DcMotor.class, "RightFront");
 
         MotorLeftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -97,7 +97,7 @@ public class Chassis {
             } else {
                 decelCoefficient = 1 - Math.pow(3, stoppingDistance-lesserDistance);
             }
-            
+
             leftPower = leftDistance / greaterDistance * decelCoefficient;
             rightPower = rightDistance / greaterDistance * decelCoefficient;
         } else{
