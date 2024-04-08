@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Lift {
     private DcMotor liftMotor;
@@ -23,6 +24,8 @@ public class Lift {
     private int currentTimeout; 
     private int extendedComponentId;
     private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));
+
+    public AtomicBoolean shouldContinueAutonomousLoop = new AtomicBoolean(true);
 
     public Lift(HardwareMap hardwareMap, Claw inheritedClaw) {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
@@ -96,14 +99,14 @@ public class Lift {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             process();
-            return true;
+            return shouldContinueAutonomousLoop.get();
         }
     }
 
     public Action autonomous() {
         // Lift loop for autonomous using Roadrunner
         // https://rr.brott.dev/docs/v1-0/actions/
-
+        shouldContinueAutonomousLoop.set(true);
         return new AutonomousLift();
     }
 }
