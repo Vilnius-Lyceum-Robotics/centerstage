@@ -10,11 +10,20 @@ public class Chassis {
     DcMotor MotorLeftFront;
     DcMotor MotorRightBack;
     DcMotor MotorRightFront;
+    DistanceSensors distanceSensors;
+    private static final int calibrationDistance = 4; // inches
+
+    private enum Mode {
+        NORMAL,
+        BACKBOARD
+    }
+
+    private Mode currentMode;
 
     private double power = 0.2;
     private double xPower = 1;
 
-    public Chassis(HardwareMap hardwareMap) {
+    public Chassis(HardwareMap hardwareMap, DistanceSensors distanceSensors) {
 
         MotorLeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
         MotorLeftFront = hardwareMap.get(DcMotor.class, "RightFront");
@@ -34,6 +43,9 @@ public class Chassis {
         MotorLeftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         MotorLeftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        this.distanceSensors = distanceSensors;
+
+        currentMode = Mode.NORMAL;
 
         stop(); // Just in case
     }
@@ -64,12 +76,51 @@ public class Chassis {
             }
         }
 
-        MotorLeftBack.setPower(-wheelSpeeds[0] * power);
-        MotorLeftFront.setPower(wheelSpeeds[1] * power);
-        MotorRightBack.setPower(-wheelSpeeds[2] * power);
-        MotorRightFront.setPower(wheelSpeeds[3] * power);
+        double leftPower;
+        double rightPower;
+        if(currentMode == Mode.NORMAL){
+            leftPower = power;
+            rightPower = power;
+        }
+        else if(currentMode == Mode.BACKBOARD){
+
+            double leftDistance = distanceSensors.leftDistance.get();
+            double rightDistance = distanceSensors.rightDistance.get();
+
+            double greaterDistance = Math.max(leftDistance, rightDistance);
+
+            leftPower = leftDistance / greaterDistance;
+            rightPower = rightDistance / greaterDistance;
+        } else{
+            leftPower = 0;
+            rightPower = 0;
+        }
+
+        MotorLeftBack.setPower(-wheelSpeeds[0] * leftPower);
+        MotorLeftFront.setPower(wheelSpeeds[1] * leftPower);
+        MotorRightBack.setPower(-wheelSpeeds[2] * rightPower);
+        MotorRightFront.setPower(wheelSpeeds[3] * rightPower);
     }
 
+    public void setMode(Mode mode){
+        currentMode = mode;
+    }
+
+    public void setNormalMode(){
+        currentMode = Mode.NORMAL;
+    }
+
+    public void setBackboardMode(){
+        currentMode = Mode.BACKBOARD;
+    }
+
+    public void toggleMode(){
+        if(currentMode == Mode.NORMAL){
+            currentMode = Mode.BACKBOARD;
+        } else{
+            currentMode = Mode.NORMAL;
+        }
+    }
     public void setPower(double pwr) {
         power = pwr;
     }
