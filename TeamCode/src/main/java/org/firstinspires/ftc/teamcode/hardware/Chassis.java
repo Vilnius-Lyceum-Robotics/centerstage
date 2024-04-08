@@ -105,10 +105,10 @@ public class Chassis {
             rightPower = 0;
         }
 
-        MotorLeftBack.setPower(-wheelSpeeds[0] * leftPower);
-        MotorLeftFront.setPower(wheelSpeeds[1] * rightPower);
-        MotorRightBack.setPower(-wheelSpeeds[2] * rightPower);
-        MotorRightFront.setPower(wheelSpeeds[3] * leftPower);
+        MotorLeftBack.setPower(-wheelSpeeds[0] * rightPower);
+        MotorLeftFront.setPower(wheelSpeeds[1] * leftPower);
+        MotorRightBack.setPower(-wheelSpeeds[2] * leftPower);
+        MotorRightFront.setPower(wheelSpeeds[3] * rightPower
     }
 
     public void setMode(Mode mode){
