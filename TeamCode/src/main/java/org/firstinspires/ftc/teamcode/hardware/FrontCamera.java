@@ -135,23 +135,25 @@ public class FrontCamera {
                 System.out.println("Tag Bearing (deg): " + detection.ftcPose.bearing);
             }
         }
-        while (true) {
-            List<Recognition> recognitions = tfodProcessor.getRecognitions();
-            for (Recognition recognition : recognitions) {
-                if (recognition.getLabel().equals("blueprop") || recognition.getLabel().equals("redprop")) {
-                    hasTeamProp = true;
+        List<Recognition> recognitions = tfodProcessor.getRecognitions();
+        for (Recognition recognition : recognitions) {
+            if (recognition.getLabel().equals("blueprop") || recognition.getLabel().equals("redprop")) {
+                hasTeamProp = true;
 
-                    System.out.println("DETECTED");
-                    double f = recognition.estimateAngleToObject(AngleUnit.DEGREES);
-                    System.out.println(f);
-                    if (f < -2) teamPropPos = PropPos.CENTER;
-                    else teamPropPos = PropPos.RIGHT;
-                    propAng = f;
-                    System.out.println(f);
-                    System.out.println(teamPropPos);
-                }
+                //System.out.println("DETECTED");
+                double f = recognition.estimateAngleToObject(AngleUnit.DEGREES);
+                //System.out.println(f);
+                System.out.println(recognition.getLeft());
+                // left iki 450
+                // center nuo 450 iki 1250
+                // right po 1250
+                if(f < 450) teamPropPos = PropPos.LEFT;
+                else if(f < 1250) teamPropPos = PropPos.CENTER;
+                else teamPropPos = PropPos.RIGHT;
+                propAng = f;
+                //System.out.println(f);
+                //System.out.println(teamPropPos);
             }
-            sleep(50);
         }
         // https://ftc-docs.firstinspires.org/en/latest/ftc_ml/index.html
         // https://ftc-docs.firstinspires.org/en/latest/ftc_ml/managing_tool/create_videos/create-videos.html
