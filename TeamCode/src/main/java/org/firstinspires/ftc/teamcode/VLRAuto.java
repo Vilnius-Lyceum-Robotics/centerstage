@@ -182,25 +182,25 @@ public class VLRAuto extends LinearOpMode {
         // X
         correct = 0;
         timeout.reset();
-        while (!isStopRequested() || timeout.seconds() > 4) {
-            double xOffset = cam.distToBoard() - 8.5;
-
-            telemetry.addData("Distance to board position", "%.6f", cam.distToBoard());
-            telemetry.update();
-
-            if (Math.abs(xOffset) < 1) correct++;
-            else {
-                correct = 0;
-
-                TrajectoryActionBuilder builder = drive.actionBuilder(new Pose2d(backboardX, backboardY, Math.PI))
-                        .lineToX(backboardX + xOffset, (pose2dDual, posePath, v) -> 5);
-
-                Actions.runBlocking(builder.build());
-                backboardX += xOffset;
-            }
-
-            if (correct >= 2) break;
-        }
+//        while (!isStopRequested() || timeout.seconds() > 4) {
+//            double xOffset = cam.distToBoard() - 8.5;
+//
+//            telemetry.addData("Distance to board position", "%.6f", cam.distToBoard());
+//            telemetry.update();
+//
+//            if (Math.abs(xOffset) < 1) correct++;
+//            else {
+//                correct = 0;
+//
+//                TrajectoryActionBuilder builder = drive.actionBuilder(new Pose2d(backboardX, backboardY, Math.PI))
+//                        .lineToX(backboardX + xOffset, (pose2dDual, posePath, v) -> 5);
+//
+//                Actions.runBlocking(builder.build());
+//                backboardX += xOffset;
+//            }
+//
+//            if (correct >= 2) break;
+//        }
 
         Actions.runBlocking(drive.actionBuilder(new Pose2d(backboardX, backboardY, Math.PI))
                 .setTangent(Math.PI / 2)
