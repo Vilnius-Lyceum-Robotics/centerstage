@@ -19,7 +19,7 @@ public class Lift {
     private Claw claw;
     private boolean clawWasDown;
     private static final int CALL_INTERVAL = 4;
-    private static final int LIFT_TIMEOUT = 2500;
+    private static final int LIFT_TIMEOUT = 2900;
     private int currentTimeout; 
     private int extendedComponentId;
     private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));

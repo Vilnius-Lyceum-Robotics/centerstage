@@ -88,6 +88,12 @@ public class Chassis {
             double leftDistance = distanceSensors.leftDistance.get();
             double rightDistance = distanceSensors.rightDistance.get();
 
+            if (leftDistance > rightDistance) {
+                leftDistance *= 5;
+            } else {
+                rightDistance *= 5;
+            }
+
             double greaterDistance = Math.max(leftDistance, rightDistance);
             double lesserDistance = Math.min(leftDistance, rightDistance);
             double decelCoefficient;

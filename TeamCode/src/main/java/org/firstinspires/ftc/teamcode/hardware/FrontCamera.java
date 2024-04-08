@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 
+import static android.os.SystemClock.sleep;
+
 import android.util.Size;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -31,10 +33,17 @@ public class FrontCamera {
     public static PropPos defaultPosition = PropPos.LEFT;
 
     public double processBackboard(PropPos propPosition) {
-        return 0;
-    }
-
-    public double distToBoard() {
+        for (AprilTagDetection detection : aprilTagDetections) {
+            if (detection.metadata != null) {
+                if (detection.metadata.name.contains("Left") && propPosition == PropPos.LEFT) {
+                    return detection.ftcPose.x;
+                } else if (detection.metadata.name.contains("Center") && propPosition == PropPos.CENTER) {
+                    return detection.ftcPose.x;
+                } else if (detection.metadata.name.contains("Right") && propPosition == PropPos.RIGHT) {
+                    return detection.ftcPose.x;
+                }
+            }
+        }
         return 0;
     }
 
@@ -64,6 +73,7 @@ public class FrontCamera {
                 .setTagLibrary(tagLibrary)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
+                .setLensIntrinsics(1493.422812, 1493.422812, 983.366398242, 553.266679092)
                 .build();
         if (!alliance) {
             final String[] LABELS = {
@@ -98,8 +108,8 @@ public class FrontCamera {
                 .setCamera(webcamName)
                 .addProcessor(aprilTagProcessor)
                 .addProcessor(tfodProcessor)
-                .setCameraResolution(new Size(640, 480))
-                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+                .setCameraResolution(new Size(1920, 1080))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableLiveView(true)
                 .setAutoStopLiveView(true)
                 .build();
@@ -125,22 +135,24 @@ public class FrontCamera {
                 System.out.println("Tag Bearing (deg): " + detection.ftcPose.bearing);
             }
         }
+        while (true) {
+            List<Recognition> recognitions = tfodProcessor.getRecognitions();
+            for (Recognition recognition : recognitions) {
+                if (recognition.getLabel().equals("blueprop") || recognition.getLabel().equals("redprop")) {
+                    hasTeamProp = true;
 
-        List<Recognition> recognitions = tfodProcessor.getRecognitions();
-        for (Recognition recognition : recognitions) {
-            if (recognition.getLabel().equals("blueprop") || recognition.getLabel().equals("redprop")) {
-                hasTeamProp = true;
-
-                System.out.println("DETECTED");
-                double f = recognition.estimateAngleToObject(AngleUnit.DEGREES);
-                if (f < -2) teamPropPos = PropPos.CENTER;
-                else teamPropPos = PropPos.RIGHT;
-                propAng = f;
-                System.out.println(f);
-                System.out.println(teamPropPos);
+                    System.out.println("DETECTED");
+                    double f = recognition.estimateAngleToObject(AngleUnit.DEGREES);
+                    System.out.println(f);
+                    if (f < -2) teamPropPos = PropPos.CENTER;
+                    else teamPropPos = PropPos.RIGHT;
+                    propAng = f;
+                    System.out.println(f);
+                    System.out.println(teamPropPos);
+                }
             }
+            sleep(50);
         }
-
         // https://ftc-docs.firstinspires.org/en/latest/ftc_ml/index.html
         // https://ftc-docs.firstinspires.org/en/latest/ftc_ml/managing_tool/create_videos/create-videos.html
     }
