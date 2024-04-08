@@ -11,7 +11,8 @@ public class Chassis {
     DcMotor MotorRightBack;
     DcMotor MotorRightFront;
     DistanceSensors distanceSensors;
-    private static final int calibrationDistance = 4; // inches
+    private static final int calibrationDistance = 12; // inches
+    private static final double stoppingDistance = 2; // inches
 
     private enum Mode {
         NORMAL,
@@ -88,9 +89,17 @@ public class Chassis {
             double rightDistance = distanceSensors.rightDistance.get();
 
             double greaterDistance = Math.max(leftDistance, rightDistance);
+            double lesserDistance = Math.min(leftDistance, rightDistance);
+            double decelCoefficient;
 
-            leftPower = leftDistance / greaterDistance;
-            rightPower = rightDistance / greaterDistance;
+            if(lesserDistance > calibrationDistance){
+                decelCoefficient = 1;
+            } else {
+                decelCoefficient = 1 - Math.pow(3, stoppingDistance-lesserDistance);
+            }
+            
+            leftPower = leftDistance / greaterDistance * decelCoefficient;
+            rightPower = rightDistance / greaterDistance * decelCoefficient;
         } else{
             leftPower = 0;
             rightPower = 0;
