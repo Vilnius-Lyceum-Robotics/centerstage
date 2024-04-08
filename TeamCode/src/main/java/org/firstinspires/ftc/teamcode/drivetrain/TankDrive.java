@@ -18,14 +18,12 @@ import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.PoseVelocity2dDual;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
-import com.acmerobotics.roadrunner.ProfileParams;
 import com.acmerobotics.roadrunner.RamseteController;
 import com.acmerobotics.roadrunner.TankKinematics;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.TimeTrajectory;
 import com.acmerobotics.roadrunner.TimeTurn;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TrajectoryBuilderParams;
 import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Twist2dDual;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -34,7 +32,6 @@ import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.DownsampledWriter;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
-import com.acmerobotics.roadrunner.ftc.LazyImu;
 import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
@@ -43,14 +40,14 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.PoseMessage;
 import org.firstinspires.ftc.teamcode.messages.TankCommandMessage;
-//import org.firstinspires.ftc.teamcode.messages.TankLocalizerInputsMessage;
+import org.firstinspires.ftc.teamcode.messages.TankEncodersMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -112,7 +109,7 @@ public final class TankDrive {
 
     public final List<DcMotorEx> leftMotors, rightMotors;
 
-    public final LazyImu lazyImu;
+    public final IMU imu;
 
     public final VoltageSensor voltageSensor;
 
@@ -131,7 +128,6 @@ public final class TankDrive {
         public final List<Encoder> leftEncs, rightEncs;
 
         private double lastLeftPos, lastRightPos;
-        private boolean initialized;
 
         public DriveLocalizer() {
             {
@@ -154,6 +150,16 @@ public final class TankDrive {
 
             // TODO: reverse encoder directions if needed
             //   leftEncs.get(0).setDirection(DcMotorSimple.Direction.REVERSE);
+
+            for (Encoder e : leftEncs) {
+                lastLeftPos += e.getPositionAndVelocity().position;
+            }
+            lastLeftPos /= leftEncs.size();
+
+            for (Encoder e : rightEncs) {
+                lastRightPos += e.getPositionAndVelocity().position;
+            }
+            lastRightPos /= rightEncs.size();
         }
 
         @Override
@@ -179,20 +185,8 @@ public final class TankDrive {
             meanRightPos /= rightEncs.size();
             meanRightVel /= rightEncs.size();
 
-//            FlightRecorder.write("TANK_LOCALIZER_INPUTS",
-//                    new TankLocalizerInputsMessage(leftReadings, rightReadings));
-
-            if (!initialized) {
-                initialized = true;
-
-                lastLeftPos = meanLeftPos;
-                lastRightPos = meanRightPos;
-
-                return new Twist2dDual<>(
-                        Vector2dDual.constant(new Vector2d(0.0, 0.0), 2),
-                        DualNum.constant(0.0, 2)
-                );
-            }
+            FlightRecorder.write("TANK_ENCODERS",
+                    new TankEncodersMessage(leftReadings, rightReadings));
 
             TankKinematics.WheelIncrements<Time> twist = new TankKinematics.WheelIncrements<>(
                     new DualNum<Time>(new double[] {
@@ -239,8 +233,10 @@ public final class TankDrive {
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
+        imu = hardwareMap.get(IMU.class, "imu");
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
+        imu.initialize(parameters);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
@@ -348,10 +344,10 @@ public final class TankDrive {
             drawPoseHistory(c);
 
             c.setStroke("#4CAF50");
-            Drawing.drawRobot(c, txWorldTarget.value());
+            drawRobot(c, txWorldTarget.value());
 
             c.setStroke("#3F51B5");
-            Drawing.drawRobot(c, pose);
+            drawRobot(c, pose);
 
             c.setStroke("#4CAF50FF");
             c.setStrokeWidth(1);
@@ -431,10 +427,10 @@ public final class TankDrive {
             drawPoseHistory(c);
 
             c.setStroke("#4CAF50");
-            Drawing.drawRobot(c, txWorldTarget.value());
+            drawRobot(c, txWorldTarget.value());
 
             c.setStroke("#3F51B5");
-            Drawing.drawRobot(c, pose);
+            drawRobot(c, pose);
 
             c.setStroke("#7C4DFFFF");
             c.fillCircle(turn.beginPose.position.x, turn.beginPose.position.y, 2);
@@ -480,19 +476,26 @@ public final class TankDrive {
         c.strokePolyline(xPoints, yPoints);
     }
 
+    private static void drawRobot(Canvas c, Pose2d t) {
+        final double ROBOT_RADIUS = 9;
+
+        c.setStrokeWidth(1);
+        c.strokeCircle(t.position.x, t.position.y, ROBOT_RADIUS);
+
+        Vector2d halfv = t.heading.vec().times(0.5 * ROBOT_RADIUS);
+        Vector2d p1 = t.position.plus(halfv);
+        Vector2d p2 = p1.plus(halfv);
+        c.strokeLine(p1.x, p1.y, p2.x, p2.y);
+    }
+
     public TrajectoryActionBuilder actionBuilder(Pose2d beginPose) {
         return new TrajectoryActionBuilder(
                 TurnAction::new,
                 FollowTrajectoryAction::new,
-                new TrajectoryBuilderParams(
-                        1e-6,
-                        new ProfileParams(
-                                0.25, 0.1, 1e-2
-                        )
-                ),
-                beginPose, 0.0,
+                beginPose, 1e-6, 0.0,
                 defaultTurnConstraints,
-                defaultVelConstraint, defaultAccelConstraint
+                defaultVelConstraint, defaultAccelConstraint,
+                0.25, 0.1
         );
     }
 }
