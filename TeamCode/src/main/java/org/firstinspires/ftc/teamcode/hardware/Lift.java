@@ -26,14 +26,13 @@ public class Lift {
     private DistanceSensors distanceSensors;
     private static final int CALL_INTERVAL = 4; // ms
     private static final int LIFT_TIMEOUT = 2900; // ms * CALL_INTERVAL
-    private static final int FREE_DISTANCE = 6; // // the distance from the backboard needed to freely use the lift (in inches)
+    private static final int FREE_DISTANCE = 6; // the distance from the backboard needed to freely use the lift (in inches)
     private int currentTimeout; 
     private int extendedComponentId;
     private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));
 
     public AtomicBoolean shouldContinueAutonomousLoop = new AtomicBoolean(true);
 
-    public Lift(HardwareMap hardwareMap, Claw claw, DistanceSensors distanceSensors){
     public Lift(HardwareMap hardwareMap, Claw claw, DistanceSensors distanceSensors){
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
