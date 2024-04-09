@@ -4,19 +4,40 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Led {
-    private DigitalChannel leftLed;
-    private DigitalChannel rightLed;
+    private DigitalChannel greenLed;
+    private DigitalChannel redLed;
 
     private enum LedState {
         NONE,
         GREEN,
-        RED
+        RED,
+        AMBER
     }
-    public Led(HardwareMap hardwareMap){
-        leftLed = hardwareMap.get(DigitalChannel.class, "leftLed");
-        rightLed = hardwareMap.get(DigitalChannel.class, "rightLed");
+    public Led(HardwareMap hardwareMap, String ledName){
+        String greenLedName = ledName + "green";
+        String redLedName = ledName + "red";
+        greenLed = hardwareMap.get(DigitalChannel.class, greenLedName);
+        redLed = hardwareMap.get(DigitalChannel.class, redLedName);
     }
 
-
-
+    public void setColor(LedState state){
+        switch(state){
+            case NONE:
+                greenLed.setState(false);
+                redLed.setState(false);
+                break;
+            case GREEN:
+                greenLed.setState(true);
+                redLed.setState(false);
+                break;
+            case RED:
+                greenLed.setState(false);
+                redLed.setState(true);
+                break;
+            case AMBER:
+                greenLed.setState(true);
+                redLed.setState(true);
+                break;
+        }
+    }
 }
