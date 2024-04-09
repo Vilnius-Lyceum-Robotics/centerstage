@@ -104,7 +104,7 @@ public class VLRAuto extends LinearOpMode {
             }
         }
 
-        navBuilder = navBuilder.stopAndAdd(telemetryPacket -> false).waitSeconds(0.2).afterTime(0.2, () -> claw.setLeftPos(Claw.ClawState.OPEN));
+        navBuilder = navBuilder.stopAndAdd(telemetryPacket -> false).waitSeconds(0.1).afterTime(0, () -> claw.setLeftPos(Claw.ClawState.OPEN)).waitSeconds(1.5);
 
         if (propPosition == FrontCamera.PropPos.CENTER)
             navBuilder = navBuilder.lineToY((yDelta - 3.5) * allianceCoef);
@@ -112,7 +112,7 @@ public class VLRAuto extends LinearOpMode {
         // Move to backboard
         double backboardX = 72 - 24 - 6.5;
         double positionOffset = propPosition == FrontCamera.PropPos.LEFT ? 6 : propPosition == FrontCamera.PropPos.CENTER ? 0 : -6;
-        double backboardY = (allianceCoef * (-24 * 1.5)) + positionOffset - 1.5; // offset for claw
+        double backboardY = (allianceCoef * (-24 * 1.5)) + positionOffset; // offset for claw
 
         if (shouldWait) {
             navBuilder = navBuilder.waitSeconds(5);
@@ -135,15 +135,20 @@ public class VLRAuto extends LinearOpMode {
                         .splineToLinearHeading(new Pose2d(-72 + 24 / 2 + 10.0, (-24 - 12) * allianceCoef, Math.toRadians(allianceCoef * 90)), Math.toRadians(0), (pose2dDual, posePath, v) -> 10)
                         .splineToLinearHeading(new Pose2d(-72 + 24 / 2 + 10.0, -12 * allianceCoef, Math.toRadians(180)), Math.toRadians(0), (pose2dDual, posePath, v) -> 15);
             }
-            navBuilder = navBuilder.lineToX(0).lineToX(backboardX).setTangent(Math.PI / 2).lineToY(backboardY);
+            navBuilder = navBuilder.lineToX(0).lineToX(backboardX)
+                    .afterTime(0, () -> lift.setExtension(2))
+                    .setTangent(Math.PI / 2).lineToY(backboardY);
         } else {
             // can just proceed to backboard
             if (propPosition == FrontCamera.PropPos.CENTER) {
                 navBuilder = navBuilder.lineToY(-24 * 1.5 * allianceCoef)
+                        .afterTime(0, () -> lift.setExtension(2))
                         .splineToLinearHeading(new Pose2d(backboardX, backboardY, Math.toRadians(0)), Math.toRadians(0));
             } else {
                 navBuilder = navBuilder
                         .lineToX(backboardX, (pose2dDual, posePath, v) -> 15)
+                        .afterTime(0, () -> lift.setExtension(2))
+                        .turnTo(0)
                         .setTangent(Math.PI / 2)
                         .lineToY(backboardY, (pose2dDual, posePath, v) -> 15);
             }
@@ -153,11 +158,9 @@ public class VLRAuto extends LinearOpMode {
 
         //////////////////////////////////////////////////////////
         Actions.runBlocking(new ParallelAction(navBuilder.build(),
-                lift.autonomous()));
+                lift.autonomous(distanceSensors::process)));
         //////////////////////////////////////////////////////////
         sleep(150);
-
-        lift.setExtension(2);
 
         // Align X with backboard using distance sensors
         double dist = distanceSensors.getMinDistance() - 3.0; // todo tune
@@ -169,11 +172,11 @@ public class VLRAuto extends LinearOpMode {
         claw.setRightPos(Claw.ClawState.OPEN);
         sleep(1000);
         Actions.runBlocking(drive.actionBuilder(new Pose2d(backboardX + dist, backboardY, 0))
-                .lineToX(backboardX - 3)
+                .lineToX(backboardX - 1.5)
                 .build());
         lift.setExtension(1);
 
-        TrajectoryActionBuilder parkingTraj = drive.actionBuilder(new Pose2d(backboardX - 3, backboardY, 0));
+        TrajectoryActionBuilder parkingTraj = drive.actionBuilder(new Pose2d(backboardX - 1.5, backboardY, 0));
         parkingTraj = parkingTraj
                 .setTangent(Math.PI / 2)
                 .lineToY(-(72 - 8) * allianceCoef)
@@ -183,7 +186,7 @@ public class VLRAuto extends LinearOpMode {
 
         if (shouldMoveLeft) {
             Actions.runBlocking(new ParallelAction(parkingTraj.build(),
-                    lift.autonomous()));
+                    lift.autonomous(distanceSensors::process)));
         } else {
             lift.setExtension(0);
             while (!isStopRequested()) {

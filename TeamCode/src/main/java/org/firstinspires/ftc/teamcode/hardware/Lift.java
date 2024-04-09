@@ -10,9 +10,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 public class Lift {
     private DcMotor liftMotor;
@@ -68,7 +71,7 @@ public class Lift {
         extendedComponentId = id;
     }
 
-    public void process() {
+    public void process(int CI) {
         if(extendedComponentId == 0 && limitSwitch.isPressed()) {
             liftMotor.setPower(0);
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -86,7 +89,7 @@ public class Lift {
             clawWasDown = false;
         }
         if(currentTimeout > 0) {
-            currentTimeout -= CALL_INTERVAL;
+            currentTimeout -= CI;
             return;
         }
 
@@ -95,18 +98,28 @@ public class Lift {
         liftMotor.setPower(1);
     }
 
+    public void process() {
+        process(CALL_INTERVAL);
+    }
+
     public class AutonomousLift implements Action {
+        Supplier distanceProcessor;
+        public AutonomousLift(Supplier distanceProcess) {
+            super();
+            distanceProcessor = distanceProcess;
+        }
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            process();
+            process(40);
+            distanceProcessor.get();
             return shouldContinueAutonomousLoop.get();
         }
     }
 
-    public Action autonomous() {
+    public Action autonomous(Supplier distanceProcess) {
         // Lift loop for autonomous using Roadrunner
         // https://rr.brott.dev/docs/v1-0/actions/
         shouldContinueAutonomousLoop.set(true);
-        return new AutonomousLift();
+        return new AutonomousLift(distanceProcess);
     }
 }

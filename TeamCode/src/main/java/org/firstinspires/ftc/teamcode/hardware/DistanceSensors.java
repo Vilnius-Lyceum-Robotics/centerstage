@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import com.outoftheboxrobotics.photoncore.PeriodicSupplier;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -30,7 +28,7 @@ public class DistanceSensors {
         distanceSensorRight = hardwareMap.get(DistanceSensor.class, "distanceSensorRight");
     }
 
-    public void process(){
+    public boolean process(){
         if(!leftInFlight.get()){
             leftInFlight.set(true);
             getRawLeft().thenAccept(distance -> {
@@ -45,6 +43,7 @@ public class DistanceSensors {
                 rightInFlight.set(false);
             });
         }
+        return true;
     }
 
     public CompletableFuture<Double> getRawLeft(){
