@@ -18,7 +18,7 @@ public class Chassis {
     private double power = 0.2;
     private double xPower = 1;
 
-    public Chassis(HardwareMap hardwareMap, DistanceSensors distanceSensors){
+    public Chassis(HardwareMap hardwareMap, DistanceSensors distanceSensors) {
 
         MotorLeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
         MotorLeftFront = hardwareMap.get(DcMotor.class, "RightFront");
@@ -50,15 +50,13 @@ public class Chassis {
     }
 
     public void drive(Pose2d vector) {
-
         double vectorHeading = vector.heading.imag;
         double leftPower;
         double rightPower;
-        if(ModeManager.getMode() == ModeManager.Mode.NORMAL || !distanceSensors.makesSense()){
+        if (ModeManager.getMode() == ModeManager.Mode.NORMAL || !distanceSensors.makesSense()) {
             leftPower = power;
             rightPower = power;
-        }
-        else if(ModeManager.getMode() == ModeManager.Mode.BACKBOARD){
+        } else if (ModeManager.getMode() == ModeManager.Mode.BACKBOARD && distanceSensors.getMinDistance() <= stoppingDistance) {
             double leftDistance = distanceSensors.getLeftDistance();
             double rightDistance = distanceSensors.getRightDistance();
 
@@ -72,10 +70,10 @@ public class Chassis {
             double lesserDistance = Math.min(leftDistance, rightDistance);
             double decelCoefficient;
 
-            if(lesserDistance > calibrationDistance){
+            if (lesserDistance > calibrationDistance) {
                 decelCoefficient = 1;
             } else {
-                decelCoefficient = 1 - Math.pow(3, stoppingDistance-lesserDistance);
+                decelCoefficient = 1 - Math.pow(3, stoppingDistance - lesserDistance);
             }
 
             vectorHeading += distanceSensors.getAngle() / (Math.PI / 4);
@@ -83,11 +81,7 @@ public class Chassis {
 
             leftPower = leftDistance / greaterDistance * decelCoefficient;
             rightPower = rightDistance / greaterDistance * decelCoefficient;
-        } else if(distanceSensors.getMinDistance() <= stoppingDistance){
-            leftPower = 0;
-            rightPower = 0;
-        }
-        else{
+        } else {
             leftPower = 0;
             rightPower = 0;
         }
@@ -107,13 +101,13 @@ public class Chassis {
                 wheelSpeeds[i] = wheelSpeeds[i] / max;
             }
         }
-
-
+        
         MotorLeftBack.setPower(-wheelSpeeds[0] * rightPower);
         MotorLeftFront.setPower(wheelSpeeds[1] * leftPower);
         MotorRightBack.setPower(-wheelSpeeds[2] * leftPower);
         MotorRightFront.setPower(wheelSpeeds[3] * rightPower);
     }
+
     public void setPower(double pwr) {
         power = pwr;
     }
