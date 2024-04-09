@@ -42,11 +42,13 @@ public class VLRAuto extends LinearOpMode {
         telemetry.addData("MAIN", "Ready to start");
         telemetry.update();
 
-        cam.process(20, 50);
-        telemetry.addData("ANGLE", "%.3f", (float) cam.propAng);
         ///////////////////////////////////////////////
         waitForStart();
         ///////////////////////////////////////////////
+        cam.processUntilDetection();
+//        telemetry.addData("ANGLE", "%.3f", (float) cam.propAng);
+//        telemetry.update();
+//        sleep(3000);
         lift.setExtension(1);
         lift.process();
 
@@ -104,7 +106,7 @@ public class VLRAuto extends LinearOpMode {
             }
         }
 
-        navBuilder = navBuilder.stopAndAdd(telemetryPacket -> false).waitSeconds(0.1).afterTime(0, () -> claw.setLeftPos(Claw.ClawState.OPEN)).waitSeconds(1.5);
+        navBuilder = navBuilder.stopAndAdd(telemetryPacket -> false).waitSeconds(0.1).afterTime(0, () -> claw.setLeftPos(Claw.ClawState.OPEN)).waitSeconds(0.3);
 
         if (propPosition == FrontCamera.PropPos.CENTER)
             navBuilder = navBuilder.lineToY((yDelta - 3.5) * allianceCoef);
@@ -136,18 +138,19 @@ public class VLRAuto extends LinearOpMode {
                         .splineToLinearHeading(new Pose2d(-72 + 24 / 2 + 10.0, -12 * allianceCoef, Math.toRadians(180)), Math.toRadians(0), (pose2dDual, posePath, v) -> 15);
             }
             navBuilder = navBuilder.lineToX(0).lineToX(backboardX)
-                    .afterTime(0, () -> lift.setExtension(2))
+                    .afterTime(0, () -> lift.setExtension(3))
                     .setTangent(Math.PI / 2).lineToY(backboardY);
         } else {
             // can just proceed to backboard
             if (propPosition == FrontCamera.PropPos.CENTER) {
                 navBuilder = navBuilder.lineToY(-24 * 1.5 * allianceCoef)
-                        .afterTime(0, () -> lift.setExtension(2))
+                        .afterTime(0, () -> lift.setExtension(3))
+                        .turnTo(0)
                         .splineToLinearHeading(new Pose2d(backboardX, backboardY, Math.toRadians(0)), Math.toRadians(0));
             } else {
                 navBuilder = navBuilder
-                        .lineToX(backboardX, (pose2dDual, posePath, v) -> 35)
-                        .afterTime(0, () -> lift.setExtension(2))
+                        .lineToX(backboardX)
+                        .afterTime(0, () -> lift.setExtension(3))
                         .turnTo(0)
                         .setTangent(Math.PI / 2)
                         .lineToY(backboardY, (pose2dDual, posePath, v) -> 15);
@@ -163,14 +166,14 @@ public class VLRAuto extends LinearOpMode {
         sleep(150);
 
         // Align X with backboard using distance sensors
-        double dist = distanceSensors.getMinDistance() - 3.0; // todo tune
+        double dist = distanceSensors.getMinDistance() - 2.9; // todo tune
         Actions.runBlocking(drive.actionBuilder(new Pose2d(backboardX, backboardY, 0))
                 .lineToX(backboardX + dist)
                 .build());
 
         sleep(500);
         claw.setRightPos(Claw.ClawState.OPEN);
-        sleep(1000);
+        sleep(350);
         Actions.runBlocking(drive.actionBuilder(new Pose2d(backboardX + dist, backboardY, 0))
                 .lineToX(backboardX - 1.5)
                 .build());

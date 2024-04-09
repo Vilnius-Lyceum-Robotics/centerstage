@@ -68,6 +68,10 @@ public class Lift {
         if (id < 0 || id >= extensionValues.size()) {
             return;
         }
+        if ((extendedComponentId < 2 && id >= 2) || (extendedComponentId >= 2 && id < 2)) {
+            claw.setLeftPos(Claw.ClawState.CLOSED);
+            claw.setRightPos(Claw.ClawState.CLOSED);
+        }
         extendedComponentId = id;
     }
 
