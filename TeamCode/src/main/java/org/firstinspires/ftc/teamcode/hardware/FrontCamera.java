@@ -30,27 +30,13 @@ public class FrontCamera {
     public List<AprilTagDetection> aprilTagDetections = new ArrayList<>();
 
 
-    public static PropPos defaultPosition = PropPos.LEFT;
-
-    public double processBackboard(PropPos propPosition) {
-        for (AprilTagDetection detection : aprilTagDetections) {
-            if (detection.metadata != null) {
-                if (detection.metadata.name.contains("Left") && propPosition == PropPos.LEFT) {
-                    return detection.ftcPose.x;
-                } else if (detection.metadata.name.contains("Center") && propPosition == PropPos.CENTER) {
-                    return detection.ftcPose.x;
-                } else if (detection.metadata.name.contains("Right") && propPosition == PropPos.RIGHT) {
-                    return detection.ftcPose.x;
-                }
-            }
-        }
-        return 0;
-    }
+    public static PropPos defaultPosition = PropPos.NONE;
 
     public enum PropPos {
         LEFT,
         CENTER,
-        RIGHT
+        RIGHT,
+        NONE
     }
 
     public boolean hasTeamProp = false;
@@ -141,14 +127,13 @@ public class FrontCamera {
                 hasTeamProp = true;
 
                 //System.out.println("DETECTED");
-                double f = recognition.estimateAngleToObject(AngleUnit.DEGREES);
+                double f = recognition.getLeft();
                 //System.out.println(f);
-                System.out.println(recognition.getLeft());
                 // left iki 450
                 // center nuo 450 iki 1250
                 // right po 1250
-                if(f < 450) teamPropPos = PropPos.LEFT;
-                else if(f < 1250) teamPropPos = PropPos.CENTER;
+                if (f < 450) teamPropPos = PropPos.LEFT;
+                else if (f < 1250) teamPropPos = PropPos.CENTER;
                 else teamPropPos = PropPos.RIGHT;
                 propAng = f;
                 //System.out.println(f);
@@ -169,6 +154,12 @@ public class FrontCamera {
         for (int i = 0; i < times; i++) {
             process();
             sleep(sleepMs);
+        }
+    }
+
+    public void processUntilDetection() {
+        while (teamPropPos != PropPos.NONE) {
+            process();
         }
     }
 

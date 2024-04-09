@@ -34,6 +34,7 @@ public class Lift {
     public AtomicBoolean shouldContinueAutonomousLoop = new AtomicBoolean(true);
 
     public Lift(HardwareMap hardwareMap, Claw claw, DistanceSensors distanceSensors){
+    public Lift(HardwareMap hardwareMap, Claw claw, DistanceSensors distanceSensors){
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         limitSwitch = hardwareMap.get(TouchSensor.class, "limitSwitch");
@@ -74,6 +75,10 @@ public class Lift {
     public void setExtension(int id) {
         if (id < 0 || id >= extensionValues.size()) {
             return;
+        }
+        if ((extendedComponentId < 2 && id >= 2) || (extendedComponentId >= 2 && id < 2)) {
+            claw.setLeftPos(Claw.ClawState.CLOSED);
+            claw.setRightPos(Claw.ClawState.CLOSED);
         }
         extendedComponentId = id;
     }
