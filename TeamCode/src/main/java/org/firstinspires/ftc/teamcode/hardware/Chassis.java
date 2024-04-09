@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.helpers.ModeManager;
+
 public class Chassis {
     DcMotor MotorLeftBack;
     DcMotor MotorLeftFront;
@@ -13,14 +15,6 @@ public class Chassis {
     private DistanceSensors distanceSensors;
     private static final int calibrationDistance = 12; // inches
     private static final double stoppingDistance = 3; // inches
-
-    public enum Mode {
-        NORMAL,
-        BACKBOARD
-    }
-
-    public Mode currentMode;
-
     private double power = 0.2;
     private double xPower = 1;
 
@@ -44,7 +38,6 @@ public class Chassis {
         MotorLeftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         MotorLeftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        currentMode = Mode.NORMAL;
         this.distanceSensors = distanceSensors;
         stop(); // Just in case
     }
@@ -80,11 +73,11 @@ public class Chassis {
 
         double leftPower;
         double rightPower;
-        if(currentMode == Mode.NORMAL || !distanceSensors.makesSense()){
+        if(ModeManager.getMode() == ModeManager.Mode.NORMAL || !distanceSensors.makesSense()){
             leftPower = power;
             rightPower = power;
         }
-        else if(currentMode == Mode.BACKBOARD){
+        else if(ModeManager.getMode() == ModeManager.Mode.BACKBOARD){
 
             double leftDistance = distanceSensors.leftDistance.get();
             double rightDistance = distanceSensors.rightDistance.get();
@@ -129,29 +122,6 @@ public class Chassis {
         MotorLeftFront.setPower(wheelSpeeds[1] * leftPower);
         MotorRightBack.setPower(-wheelSpeeds[2] * leftPower);
         MotorRightFront.setPower(wheelSpeeds[3] * rightPower);
-    }
-
-    public void setMode(Mode mode){
-        currentMode = mode;
-    }
-
-    public void setNormalMode(){
-        currentMode = Mode.NORMAL;
-    }
-
-    public void setBackboardMode(){
-        currentMode = Mode.BACKBOARD;
-    }
-    public Mode getMode(){
-        return currentMode;
-    }
-
-    public void toggleMode(){
-        if(currentMode == Mode.NORMAL){
-            currentMode = Mode.BACKBOARD;
-        } else{
-            currentMode = Mode.NORMAL;
-        }
     }
     public void setPower(double pwr) {
         power = pwr;

@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.helpers.ModeManager;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -21,7 +23,6 @@ public class Lift {
     private DcMotor liftMotor;
     private TouchSensor limitSwitch;
     private Claw claw;
-    private Chassis chassis;
     private DistanceSensors distanceSensors;
     private static final int CALL_INTERVAL = 4; // ms
     private static final int LIFT_TIMEOUT = 2900; // ms * CALL_INTERVAL
@@ -43,7 +44,6 @@ public class Lift {
         extendedComponentId = 0;
 
         this.claw = claw;
-        this.chassis = chassis;
         this.distanceSensors = distanceSensors;
     }
 
@@ -54,19 +54,19 @@ public class Lift {
         if (extendedComponentId == 1) {
             claw.setLeftPos(Claw.ClawState.CLOSED);
             claw.setRightPos(Claw.ClawState.CLOSED);
-            chassis.setBackboardMode();
+            ModeManager.setBackboardMode();
         }
         extendedComponentId++;
     }
 
     public void retract(){
-        if(extendedComponentId <= 0 || (distanceSensors.getMinDistance() >= FREE_DISTANCE && chassis.getMode() == Chassis.Mode.BACKBOARD)) {
+        if(extendedComponentId <= 0 || (distanceSensors.getMinDistance() >= FREE_DISTANCE && ModeManager.getMode() == ModeManager.Mode.BACKBOARD)) {
             return;
         }
         if (extendedComponentId == 2) {
             claw.setLeftPos(Claw.ClawState.CLOSED);
             claw.setRightPos(Claw.ClawState.CLOSED);
-            chassis.setNormalMode();
+            ModeManager.setNormalMode();
         }
         extendedComponentId--;
     }
