@@ -101,7 +101,7 @@ public class Chassis {
                 wheelSpeeds[i] = wheelSpeeds[i] / max;
             }
         }
-        
+
         MotorLeftBack.setPower(-wheelSpeeds[0] * rightPower);
         MotorLeftFront.setPower(wheelSpeeds[1] * leftPower);
         MotorRightBack.setPower(-wheelSpeeds[2] * leftPower);

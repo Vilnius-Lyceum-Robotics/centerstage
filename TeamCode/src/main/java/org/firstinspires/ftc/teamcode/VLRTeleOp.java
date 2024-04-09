@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.hardware.Claw;
 import org.firstinspires.ftc.teamcode.hardware.DistanceSensors;
 import org.firstinspires.ftc.teamcode.hardware.PullUp;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
+import org.firstinspires.ftc.teamcode.helpers.ModeManager;
 
 @Photon
 @TeleOp(name = "VLRTeleOp")
@@ -59,15 +60,15 @@ public class VLRTeleOp extends LinearOpMode {
             }
 
             if (gamepadEx.wasJustPressed(GamepadKeys.Button.B)) {
-                chassis.toggleMode();
+                ModeManager.toggleMode();
             }
 
             distanceSensors.process();
 
 //            telemetry.addData("Distance between sensors",  "%.2f %.2f", distanceSensors.getMinDistance(), distanceSensors.getMaxDistance());
-            telemetry.addData("Distance between sensors",  "%.2f %.2f", distanceSensors.leftDistance.get(), distanceSensors.rightDistance.get());
+            telemetry.addData("Distance between sensors",  "%.2f %.2f", distanceSensors.getLeftDistance(), distanceSensors.getRightDistance());
             telemetry.addData("Angle between sensors", "%.2f", distanceSensors.getAngle());
-            telemetry.addData("Mode", chassis.currentMode);
+            telemetry.addData("Mode", ModeManager.getMode());
             telemetry.addData("---------", "---------");
             telemetry.addData("Last loop ms", lastLooptime);
             telemetry.update();
