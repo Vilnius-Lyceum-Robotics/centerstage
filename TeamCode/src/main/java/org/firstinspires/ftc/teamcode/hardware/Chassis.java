@@ -114,7 +114,13 @@ public class Chassis {
 
             leftPower = leftDistance / greaterDistance * decelCoefficient;
             rightPower = rightDistance / greaterDistance * decelCoefficient;
-        } else{
+
+
+        } else if(distanceSensors.getMinDistance() <= stoppingDistance){
+            leftPower = 0;
+            rightPower = 0;
+        }
+        else{
             leftPower = 0;
             rightPower = 0;
         }
