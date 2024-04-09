@@ -119,6 +119,11 @@ public class Lift {
     public Action autonomous(Supplier distanceProcess) {
         // Lift loop for autonomous using Roadrunner
         // https://rr.brott.dev/docs/v1-0/actions/
+
+        // Also run distance sensor processing in the same loop
+        // Saves on having to write this action two times
+        // todo maybe export to a seperate class made just for this purpose?
+
         shouldContinueAutonomousLoop.set(true);
         return new AutonomousLift(distanceProcess);
     }

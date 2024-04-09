@@ -146,7 +146,7 @@ public class VLRAuto extends LinearOpMode {
                         .splineToLinearHeading(new Pose2d(backboardX, backboardY, Math.toRadians(0)), Math.toRadians(0));
             } else {
                 navBuilder = navBuilder
-                        .lineToX(backboardX, (pose2dDual, posePath, v) -> 15)
+                        .lineToX(backboardX, (pose2dDual, posePath, v) -> 35)
                         .afterTime(0, () -> lift.setExtension(2))
                         .turnTo(0)
                         .setTangent(Math.PI / 2)
@@ -179,7 +179,7 @@ public class VLRAuto extends LinearOpMode {
         TrajectoryActionBuilder parkingTraj = drive.actionBuilder(new Pose2d(backboardX - 1.5, backboardY, 0));
         parkingTraj = parkingTraj
                 .setTangent(Math.PI / 2)
-                .lineToY(-(72 - 8) * allianceCoef)
+                .lineToY(-(72 - 10) * allianceCoef)
                 .setTangent(Math.PI)
                 .lineToX(backboardX + 14)
                 .waitSeconds(5).afterTime(0.2, () -> lift.setExtension(0));
