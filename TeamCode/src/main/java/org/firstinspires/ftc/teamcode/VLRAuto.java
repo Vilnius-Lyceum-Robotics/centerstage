@@ -42,7 +42,7 @@ public class VLRAuto extends LinearOpMode {
         telemetry.addData("MAIN", "Ready to start");
         telemetry.update();
 
-        cam.process(5);
+        cam.process(20, 50);
         telemetry.addData("ANGLE", "%.3f", (float) cam.propAng);
         ///////////////////////////////////////////////
         waitForStart();

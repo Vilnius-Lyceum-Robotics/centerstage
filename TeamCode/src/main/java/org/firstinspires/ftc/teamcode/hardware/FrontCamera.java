@@ -165,6 +165,13 @@ public class FrontCamera {
         }
     }
 
+    public void process(int times, int sleepMs) {
+        for (int i = 0; i < times; i++) {
+            process();
+            sleep(sleepMs);
+        }
+    }
+
     public void close() {
         visionPortal.close();
     }
