@@ -14,7 +14,7 @@ public class Chassis {
     private static final int calibrationDistance = 12; // inches
     private static final double stoppingDistance = 3; // inches
 
-    private enum Mode {
+    public enum Mode {
         NORMAL,
         BACKBOARD
     }
@@ -135,6 +135,9 @@ public class Chassis {
 
     public void setBackboardMode(){
         currentMode = Mode.BACKBOARD;
+    }
+    public Mode getMode(){
+        return currentMode;
     }
 
     public void toggleMode(){

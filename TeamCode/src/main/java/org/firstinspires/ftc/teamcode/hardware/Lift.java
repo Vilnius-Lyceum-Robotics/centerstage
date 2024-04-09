@@ -23,8 +23,9 @@ public class Lift {
     private Claw claw;
     private Chassis chassis;
     private DistanceSensors distanceSensors;
-    private static final int CALL_INTERVAL = 4;
-    private static final int LIFT_TIMEOUT = 2900;
+    private static final int CALL_INTERVAL = 4; // ms
+    private static final int LIFT_TIMEOUT = 2900; // ms * CALL_INTERVAL
+    private static final int FREE_DISTANCE = 6; // // the distance from the backboard needed to freely use the lift (in inches)
     private int currentTimeout; 
     private int extendedComponentId;
     private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));
@@ -59,7 +60,7 @@ public class Lift {
     }
 
     public void retract(){
-        if(extendedComponentId <= 0) {
+        if(extendedComponentId <= 0 || (distanceSensors.getMinDistance() >= FREE_DISTANCE && chassis.getMode() == Chassis.Mode.BACKBOARD)) {
             return;
         }
         if (extendedComponentId == 2) {
