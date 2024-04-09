@@ -88,11 +88,11 @@ public class Chassis {
             double leftDistance = distanceSensors.leftDistance.get();
             double rightDistance = distanceSensors.rightDistance.get();
 
-            if (leftDistance > rightDistance) {
-                leftDistance *= 5;
-            } else {
-                rightDistance *= 5;
-            }
+//            if (leftDistance > rightDistance) {
+//                leftDistance *= 5;
+//            } else {
+//                rightDistance *= 5;
+//            }
 
             double greaterDistance = Math.max(leftDistance, rightDistance);
             double lesserDistance = Math.min(leftDistance, rightDistance);
@@ -104,7 +104,7 @@ public class Chassis {
                 decelCoefficient = 1 - Math.pow(3, stoppingDistance-lesserDistance);
             }
 
-            double vhi = vector.heading.imag + distanceSensors.getAngle() * vector.position.y / (Math.PI / 4);
+            double vhi = vector.heading.imag + distanceSensors.getAngle() / (Math.PI / 4);
             vhi *= decelCoefficient;
             wheelSpeeds[0] = vhi - vector.position.x * xPower + vector.position.y; // Back Left
             wheelSpeeds[1] = -vhi - vector.position.x * xPower + vector.position.y; // Front Left

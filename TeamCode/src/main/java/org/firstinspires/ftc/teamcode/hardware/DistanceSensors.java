@@ -81,7 +81,7 @@ public class DistanceSensors {
     }
 
     public boolean makesSense(){
-        return leftDistance.get() <= EXCEEDING_DISTANCE || rightDistance.get() <= EXCEEDING_DISTANCE;
+        return leftDistance.get() <= EXCEEDING_DISTANCE && rightDistance.get() <= EXCEEDING_DISTANCE;
     }
 
     public double getAngle(){

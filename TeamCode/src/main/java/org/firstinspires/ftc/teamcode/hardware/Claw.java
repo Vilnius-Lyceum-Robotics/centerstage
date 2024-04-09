@@ -45,10 +45,10 @@ public class Claw {
     }
 
     public void rotatorDown() {
-        rotator.setPosition(0.07);
+        rotator.setPosition(0.05);
     }
 
     public void rotatorUp() {
-        rotator.setPosition(0.82);
+        rotator.setPosition(0.8);
     }
 }
