@@ -7,12 +7,13 @@ public class Led {
     private DigitalChannel greenLed;
     private DigitalChannel redLed;
 
-    private enum LedState {
+    private enum LedColor {
         NONE,
         GREEN,
         RED,
         AMBER
     }
+    private LedColor currentColor = LedColor.NONE;
     public Led(HardwareMap hardwareMap, String ledName){
         String greenLedName = "green" + ledName;
         String redLedName = "red" + ledName;
@@ -20,7 +21,7 @@ public class Led {
         redLed = hardwareMap.get(DigitalChannel.class, redLedName);
     }
 
-    public void setColor(LedState state){
+    public void setColor(LedColor state){
         switch(state){
             case NONE:
                 greenLed.setState(false);
@@ -33,11 +34,31 @@ public class Led {
             case RED:
                 greenLed.setState(false);
                 redLed.setState(true);
+
                 break;
             case AMBER:
                 greenLed.setState(true);
                 redLed.setState(true);
                 break;
         }
+        currentColor = state;
+    }
+    public void blink(LedColor newColor, int duration, int count) {
+        LedColor previousColor = currentColor;
+        Thread thread = new Thread(() -> {
+            try {
+                for (int i = 0; i < count; i++) {
+                    setColor(newColor);
+                    Thread.sleep(duration);
+                    setColor(previousColor);
+                    Thread.sleep(duration);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                setColor(previousColor);
+            }
+        });
+        thread.start();
     }
 }
