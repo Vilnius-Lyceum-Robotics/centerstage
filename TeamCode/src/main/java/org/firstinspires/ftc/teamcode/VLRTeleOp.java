@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.outoftheboxrobotics.photoncore.Photon;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.Chassis;
 import org.firstinspires.ftc.teamcode.hardware.Claw;
@@ -26,9 +27,13 @@ public class VLRTeleOp extends LinearOpMode {
         Claw claw = new Claw(hardwareMap);
         Lift lift = new Lift(hardwareMap, claw);
 
+        ElapsedTime looptime = new ElapsedTime();
+        int lastLooptime = 0;
+
         waitForStart();
 
         while (opModeIsActive()) {
+            looptime.reset();
             gamepadEx.readButtons();
             chassis.setPower(1 - gamepadEx.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 0.75);
 
@@ -63,9 +68,12 @@ public class VLRTeleOp extends LinearOpMode {
             telemetry.addData("Distance between sensors",  "%.2f %.2f", distanceSensors.leftDistance.get(), distanceSensors.rightDistance.get());
             telemetry.addData("Angle between sensors", "%.2f", distanceSensors.getAngle());
             telemetry.addData("Mode", chassis.currentMode);
+            telemetry.addData("---------", "---------");
+            telemetry.addData("Last loop ms", lastLooptime);
             telemetry.update();
 //            System.out.println("Distance between sensors: " + distanceSensors.getRawLeft() + " " + distanceSensors.getRawRight());
             //System.out.println("Angle between sensors: " + distanceSensors.getAngle());
+            lastLooptime = (int) looptime.milliseconds();
         }
     }
 }
