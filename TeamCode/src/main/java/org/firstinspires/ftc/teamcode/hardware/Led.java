@@ -14,8 +14,8 @@ public class Led {
         AMBER
     }
     public Led(HardwareMap hardwareMap, String ledName){
-        String greenLedName = ledName + "green";
-        String redLedName = ledName + "red";
+        String greenLedName = "green" + ledName;
+        String redLedName = "red" + ledName;
         greenLed = hardwareMap.get(DigitalChannel.class, greenLedName);
         redLed = hardwareMap.get(DigitalChannel.class, redLedName);
     }
