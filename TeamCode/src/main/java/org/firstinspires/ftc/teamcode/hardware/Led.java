@@ -13,15 +13,26 @@ public class Led {
         RED,
         AMBER
     }
-    private LedColor currentColor = LedColor.NONE;
+    private LedColor currentColor;
+    private Thread blinkThread;
     public Led(HardwareMap hardwareMap, String ledName){
         String greenLedName = "green" + ledName;
         String redLedName = "red" + ledName;
         greenLed = hardwareMap.get(DigitalChannel.class, greenLedName);
         redLed = hardwareMap.get(DigitalChannel.class, redLedName);
-    }
 
+        currentColor = LedColor.NONE;
+        blinkThread = null;
+    }
     public void setColor(LedColor state){
+        setColor(state, false);
+    }
+    public void setColor(LedColor state, boolean threadCall){
+        if(threadCall && blinkThread != null){
+            blinkThread.interrupt();
+            blinkThread = null;
+        }
+        currentColor = state;
         switch(state){
             case NONE:
                 greenLed.setState(false);
@@ -41,11 +52,10 @@ public class Led {
                 redLed.setState(true);
                 break;
         }
-        currentColor = state;
     }
     public void blink(LedColor newColor, int duration, int count) {
         LedColor previousColor = currentColor;
-        Thread thread = new Thread(() -> {
+        blinkThread = new Thread(() -> {
             try {
                 for (int i = 0; i < count; i++) {
                     setColor(newColor);
@@ -59,6 +69,6 @@ public class Led {
                 setColor(previousColor);
             }
         });
-        thread.start();
+        blinkThread.start();
     }
 }
