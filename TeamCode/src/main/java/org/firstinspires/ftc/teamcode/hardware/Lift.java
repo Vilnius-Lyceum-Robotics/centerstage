@@ -21,25 +21,30 @@ public class Lift {
     private DcMotor liftMotor;
     private TouchSensor limitSwitch;
     private Claw claw;
-    private boolean clawWasDown;
-    private static final int CALL_INTERVAL = 4;
-    private static final int LIFT_TIMEOUT = 2900;
+    private Chassis chassis;
+    private DistanceSensors distanceSensors;
+    private static final int CALL_INTERVAL = 4; // ms
+    private static final int LIFT_TIMEOUT = 2900; // ms * CALL_INTERVAL
+    private static final int FREE_DISTANCE = 6; // // the distance from the backboard needed to freely use the lift (in inches)
     private int currentTimeout; 
     private int extendedComponentId;
     private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));
 
     public AtomicBoolean shouldContinueAutonomousLoop = new AtomicBoolean(true);
 
-    public Lift(HardwareMap hardwareMap, Claw inheritedClaw) {
+    public Lift(HardwareMap hardwareMap, Claw claw, Chassis chassis, DistanceSensors distanceSensors){
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         limitSwitch = hardwareMap.get(TouchSensor.class, "limitSwitch");
-        claw = inheritedClaw;
         // reset encoder
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         extendedComponentId = 0;
+
+        this.claw = claw;
+        this.chassis = chassis;
+        this.distanceSensors = distanceSensors;
     }
 
     public void extend(){
@@ -49,17 +54,19 @@ public class Lift {
         if (extendedComponentId == 1) {
             claw.setLeftPos(Claw.ClawState.CLOSED);
             claw.setRightPos(Claw.ClawState.CLOSED);
+            chassis.setBackboardMode();
         }
         extendedComponentId++;
     }
 
     public void retract(){
-        if(extendedComponentId <= 0) {
+        if(extendedComponentId <= 0 || (distanceSensors.getMinDistance() >= FREE_DISTANCE && chassis.getMode() == Chassis.Mode.BACKBOARD)) {
             return;
         }
         if (extendedComponentId == 2) {
             claw.setLeftPos(Claw.ClawState.CLOSED);
             claw.setRightPos(Claw.ClawState.CLOSED);
+            chassis.setNormalMode();
         }
         extendedComponentId--;
     }
@@ -83,14 +90,14 @@ public class Lift {
         }
         if (extendedComponentId <= 1) {
             claw.rotatorDown();
-            if (!clawWasDown) {
-                clawWasDown = true;
+            if (claw.getClawState() == Claw.ClawState.UP) {
+                claw.setClawState(Claw.ClawState.DOWN);
                 currentTimeout = LIFT_TIMEOUT;
             }
         }
         else {
             claw.rotatorUp();
-            clawWasDown = false;
+            claw.setClawState(Claw.ClawState.UP);
         }
         if(currentTimeout > 0) {
             currentTimeout -= CI;

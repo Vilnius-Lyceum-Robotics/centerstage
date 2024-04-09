@@ -8,11 +8,14 @@ public class Claw {
 
     public enum ClawState {
         OPEN,
-        CLOSED
+        CLOSED,
+        UP,
+        DOWN
     }
 
     ClawState stateLeft = ClawState.CLOSED;
     ClawState stateRight = ClawState.CLOSED;
+    private ClawState clawState;
 
     public Claw(HardwareMap hardwareMap) {
         left = hardwareMap.get(Servo.class, "leftClaw");
@@ -22,14 +25,42 @@ public class Claw {
         setRightPos(ClawState.CLOSED);
     }
 
+    public void setClawState(ClawState state) {
+        clawState = state;
+    }
+
+    public ClawState getClawState() {
+        return clawState;
+    }
+
+    public void setUpClaw() {
+        setClawState(ClawState.UP);
+    }
+
+    public void setDownClaw() {
+        setClawState(ClawState.DOWN);
+    }
+
     public void toggleLeft() {
-        if (stateLeft == ClawState.CLOSED) setLeftPos(ClawState.OPEN);
-        else setLeftPos(ClawState.CLOSED);
+        if(clawState == ClawState.UP) {
+            if (stateLeft == ClawState.CLOSED) setLeftPos(ClawState.OPEN);
+            else setLeftPos(ClawState.CLOSED);
+        }
+        else{
+            if (stateLeft == ClawState.CLOSED) setRightPos(ClawState.OPEN);
+            else setRightPos(ClawState.CLOSED);
+        }
     }
 
     public void toggleRight() {
-        if (stateRight == ClawState.CLOSED) setRightPos(ClawState.OPEN);
-        else setRightPos(ClawState.CLOSED);
+        if (clawState == ClawState.UP) {
+            if (stateRight == ClawState.CLOSED) setRightPos(ClawState.OPEN);
+            else setRightPos(ClawState.CLOSED);
+        }
+        else{
+            if (stateRight == ClawState.CLOSED) setLeftPos(ClawState.OPEN);
+            else setLeftPos(ClawState.CLOSED);
+        }
     }
 
     public void setRightPos(ClawState state) {

@@ -10,11 +10,11 @@ public class Chassis {
     DcMotor MotorLeftFront;
     DcMotor MotorRightBack;
     DcMotor MotorRightFront;
-    DistanceSensors distanceSensors;
+    private DistanceSensors distanceSensors;
     private static final int calibrationDistance = 12; // inches
     private static final double stoppingDistance = 3; // inches
 
-    private enum Mode {
+    public enum Mode {
         NORMAL,
         BACKBOARD
     }
@@ -24,7 +24,7 @@ public class Chassis {
     private double power = 0.2;
     private double xPower = 1;
 
-    public Chassis(HardwareMap hardwareMap, DistanceSensors distanceSensors) {
+    public Chassis(HardwareMap hardwareMap, DistanceSensors distanceSensors){
 
         MotorLeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
         MotorLeftFront = hardwareMap.get(DcMotor.class, "RightFront");
@@ -44,13 +44,14 @@ public class Chassis {
         MotorLeftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         MotorLeftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        this.distanceSensors = distanceSensors;
-
         currentMode = Mode.NORMAL;
-
+        this.distanceSensors = distanceSensors;
         stop(); // Just in case
     }
 
+    public void setDistanceSensors(DistanceSensors distanceSensors){
+        this.distanceSensors = distanceSensors;
+    }
     public void stop() {
         MotorLeftBack.setPower(0);
         MotorLeftFront.setPower(0);
@@ -113,7 +114,13 @@ public class Chassis {
 
             leftPower = leftDistance / greaterDistance * decelCoefficient;
             rightPower = rightDistance / greaterDistance * decelCoefficient;
-        } else{
+
+
+        } else if(distanceSensors.getMinDistance() <= stoppingDistance){
+            leftPower = 0;
+            rightPower = 0;
+        }
+        else{
             leftPower = 0;
             rightPower = 0;
         }
@@ -134,6 +141,9 @@ public class Chassis {
 
     public void setBackboardMode(){
         currentMode = Mode.BACKBOARD;
+    }
+    public Mode getMode(){
+        return currentMode;
     }
 
     public void toggleMode(){
