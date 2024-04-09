@@ -28,7 +28,7 @@ public class Led {
         setColor(state, false);
     }
     public void setColor(LedColor state, boolean threadCall){
-        if(threadCall && blinkThread != null){
+        if(!threadCall && blinkThread != null){
             blinkThread.interrupt();
             blinkThread = null;
         }
