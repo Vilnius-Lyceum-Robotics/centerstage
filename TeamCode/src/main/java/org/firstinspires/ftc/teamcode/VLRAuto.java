@@ -35,7 +35,7 @@ public class VLRAuto extends LinearOpMode {
 
         Claw claw = new Claw(hardwareMap);
         DistanceSensors distanceSensors = new DistanceSensors(hardwareMap);
-        Lift lift = new Lift(hardwareMap, claw);
+        Lift lift = new Lift(hardwareMap, claw, distanceSensors);
 
         Pose2d startPose = cfg.getStartPos(isRed, isNearBackboard);
 
