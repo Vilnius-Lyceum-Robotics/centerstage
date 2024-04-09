@@ -33,7 +33,7 @@ public class Lift {
 
     public AtomicBoolean shouldContinueAutonomousLoop = new AtomicBoolean(true);
 
-    public Lift(HardwareMap hardwareMap, Claw claw, Chassis chassis, DistanceSensors distanceSensors){
+    public Lift(HardwareMap hardwareMap, Claw claw, DistanceSensors distanceSensors){
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         limitSwitch = hardwareMap.get(TouchSensor.class, "limitSwitch");
