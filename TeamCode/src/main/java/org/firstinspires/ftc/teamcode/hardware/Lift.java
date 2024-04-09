@@ -21,6 +21,7 @@ public class Lift {
     private DcMotor liftMotor;
     private TouchSensor limitSwitch;
     private Claw claw;
+    private Chassis chassis;
     private boolean clawWasDown;
     private static final int CALL_INTERVAL = 4;
     private static final int LIFT_TIMEOUT = 2900;
@@ -30,7 +31,7 @@ public class Lift {
 
     public AtomicBoolean shouldContinueAutonomousLoop = new AtomicBoolean(true);
 
-    public Lift(HardwareMap hardwareMap, Claw inheritedClaw) {
+    public Lift(HardwareMap hardwareMap, Claw inheritedClaw, Chassis chassis) {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         limitSwitch = hardwareMap.get(TouchSensor.class, "limitSwitch");
@@ -40,6 +41,8 @@ public class Lift {
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         extendedComponentId = 0;
+
+        this.chassis = chassis;
     }
 
     public void extend(){
@@ -49,6 +52,7 @@ public class Lift {
         if (extendedComponentId == 1) {
             claw.setLeftPos(Claw.ClawState.CLOSED);
             claw.setRightPos(Claw.ClawState.CLOSED);
+            chassis.setBackboardMode();
         }
         extendedComponentId++;
     }
@@ -60,6 +64,7 @@ public class Lift {
         if (extendedComponentId == 2) {
             claw.setLeftPos(Claw.ClawState.CLOSED);
             claw.setRightPos(Claw.ClawState.CLOSED);
+            chassis.setNormalMode();
         }
         extendedComponentId--;
     }

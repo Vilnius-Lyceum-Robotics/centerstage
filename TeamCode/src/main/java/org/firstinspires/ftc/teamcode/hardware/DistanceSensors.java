@@ -15,7 +15,7 @@ public class DistanceSensors {
     private final DistanceSensor distanceSensorLeft;
     private final DistanceSensor distanceSensorRight;
     private static final double DISTANCE_BETWEEN_SENSORS = 9.17; // inches
-    private static final double EXCEEDING_DISTANCE = 30; // inches
+    private static final double EXCEEDING_DISTANCE = 17; // inches
 
     public AtomicReference<Double> leftDistance = new AtomicReference<>(0.0);
     public AtomicReference<Double> rightDistance = new AtomicReference<>(0.0);

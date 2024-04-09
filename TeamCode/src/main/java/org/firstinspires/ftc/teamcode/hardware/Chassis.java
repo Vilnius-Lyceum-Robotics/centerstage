@@ -11,6 +11,7 @@ public class Chassis {
     DcMotor MotorRightBack;
     DcMotor MotorRightFront;
     DistanceSensors distanceSensors;
+    Chassis chassis;
     private static final int calibrationDistance = 12; // inches
     private static final double stoppingDistance = 3; // inches
 
