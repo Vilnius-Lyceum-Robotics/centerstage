@@ -58,9 +58,9 @@ public class Led {
         blinkThread = new Thread(() -> {
             try {
                 for (int i = 0; i < count; i++) {
-                    setColor(newColor);
+                    setColor(newColor, true);
                     Thread.sleep(duration);
-                    setColor(previousColor);
+                    setColor(previousColor, true);
                     Thread.sleep(duration);
                 }
             } catch (InterruptedException e) {
