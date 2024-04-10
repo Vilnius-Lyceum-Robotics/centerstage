@@ -8,28 +8,28 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.hardware.Claw;
 import org.firstinspires.ftc.teamcode.hardware.DistanceSensors;
 import org.firstinspires.ftc.teamcode.hardware.FrontCamera;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
-import org.firstinspires.ftc.teamcode.helpers.AutoConfig;
-import org.firstinspires.ftc.teamcode.helpers.PreGameConfigurator;
+import org.firstinspires.ftc.teamcode.helpers.AutoConfigurator;
+import org.firstinspires.ftc.teamcode.helpers.ManualConfigurator;
 
 @Photon
 @Autonomous
 public class VLRAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        AutoConfig cfg = new AutoConfig();
-        PreGameConfigurator configurator = new PreGameConfigurator(telemetry, new GamepadEx(gamepad1));
-        boolean isRed = configurator.upDownSelect("Red", "Blue");
-        boolean isNearBackboard = configurator.leftRightSelect("Backboard", "Audience");
+        AutoConfigurator autoConfigurator = new AutoConfigurator();
+        ManualConfigurator manualConfigurator = new ManualConfigurator(telemetry, new GamepadEx(gamepad1));
 
-        boolean shouldWait = configurator.upDownSelect("Wait 5s", "Do not wait");
-        boolean shouldMoveLeft = configurator.leftRightSelect("Park to the side", "Do not move");
+        boolean isRed = manualConfigurator.upDownSelect("Red", "Blue");
+        boolean isNearBackboard = manualConfigurator.leftRightSelect("Backboard", "Audience");
+
+        boolean shouldWait = manualConfigurator.upDownSelect("Wait 5s", "Do not wait");
+        boolean shouldMoveLeft = manualConfigurator.leftRightSelect("Park to the side", "Do not move");
 
         FrontCamera cam = new FrontCamera(hardwareMap, isRed);
 
@@ -37,7 +37,7 @@ public class VLRAuto extends LinearOpMode {
         DistanceSensors distanceSensors = new DistanceSensors(hardwareMap);
         Lift lift = new Lift(hardwareMap, claw, distanceSensors);
 
-        Pose2d startPose = cfg.getStartPos(isRed, isNearBackboard);
+        Pose2d startPose = autoConfigurator.getStartPos(isRed, isNearBackboard);
 
         telemetry.addData("MAIN", "Ready to start");
         telemetry.update();
