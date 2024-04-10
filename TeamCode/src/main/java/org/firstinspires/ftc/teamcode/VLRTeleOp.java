@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.Chassis;
 import org.firstinspires.ftc.teamcode.hardware.Claw;
+import org.firstinspires.ftc.teamcode.hardware.ClawSensors;
 import org.firstinspires.ftc.teamcode.hardware.DistanceSensors;
 import org.firstinspires.ftc.teamcode.hardware.PullUp;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
@@ -23,10 +24,12 @@ public class VLRTeleOp extends LinearOpMode {
     private PullUp pullup;
     private Lift lift;
     private Claw claw;
+    private ClawSensors clawSensors;
 
     @Override
     public void runOpMode() {
         DistanceSensors distanceSensors = new DistanceSensors(hardwareMap);
+        ClawSensors clawSensors = new ClawSensors(hardwareMap);
         Chassis chassis = new Chassis(hardwareMap, distanceSensors);
         GamepadEx gamepadEx = new GamepadEx(gamepad1);
         PullUp pullup = new PullUp(hardwareMap);
@@ -69,7 +72,10 @@ public class VLRTeleOp extends LinearOpMode {
             }
 
             distanceSensors.process();
+            clawSensors.process();
 
+
+            telemetry.addData("Claw sensors", "%.2f %.2f", clawSensors.getDistanceLeft(), clawSensors.getDistanceRight());
             telemetry.addData("Distance between sensors",  "%.2f %.2f", distanceSensors.getLeftDistance(), distanceSensors.getRightDistance());
             telemetry.addData("Angle between sensors", "%.2f", distanceSensors.getAngle());
             telemetry.addData("Mode", ModeManager.getMode());

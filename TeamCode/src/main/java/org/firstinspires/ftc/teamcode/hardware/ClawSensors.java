@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class ClawSensors {
     AsyncDistanceSensor clawSensorRight;
     AsyncDistanceSensor clawSensorLeft;
-    private static final double TRIGGER_DISTANCE = 2.0; // units of your choice
+    private static final double TRIGGER_DISTANCE = 2.0; // inches
 
     public ClawSensors(HardwareMap hardwareMap) {
         clawSensorRight = new AsyncDistanceSensor(hardwareMap, "clawSensorRight");
@@ -15,6 +15,13 @@ public class ClawSensors {
         clawSensorRight.process();
         clawSensorLeft.process();
         return true;
+    }
+
+    public double getDistanceRight() {
+        return clawSensorRight.getDistance();
+    }
+    public double getDistanceLeft() {
+        return clawSensorLeft.getDistance();
     }
 
     public boolean isClose() {

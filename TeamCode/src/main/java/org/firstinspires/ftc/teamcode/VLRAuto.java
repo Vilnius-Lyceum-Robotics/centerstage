@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -11,10 +12,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.hardware.Claw;
+import org.firstinspires.ftc.teamcode.hardware.DistanceSensors;
 import org.firstinspires.ftc.teamcode.hardware.FrontCamera;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
-import org.firstinspires.ftc.teamcode.helpers.AutoConfig;
-import org.firstinspires.ftc.teamcode.helpers.PreGameConfigurator;
+import org.firstinspires.ftc.teamcode.helpers.AutoConfigurator;
+import org.firstinspires.ftc.teamcode.helpers.Constants;
+import org.firstinspires.ftc.teamcode.helpers.ManualConfigurator;
 
 @Photon
 @Autonomous
@@ -88,7 +91,7 @@ public class VLRAuto extends LinearOpMode {
             if (propPosition == FrontCamera.PropPos.CENTER) {
                 yDelta = -24 - Constants.ROBOT_LENGTH / 2.0 - 4.2;
                 navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
-                yDelta = -24 - cfg.ROBOT_LENGTH / 2.0 - 4.2;
+                yDelta = -24 - Constants.ROBOT_LENGTH / 2.0 - 4.2;
                 if (isNearBackboard) {
                     navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
                 } else {
