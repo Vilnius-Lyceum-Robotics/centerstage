@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.helpers.Constants;
 
 public class Led {
     private DigitalChannel greenLed;
@@ -14,7 +17,13 @@ public class Led {
         AMBER
     }
     private LedColor currentColor;
-    private Thread blinkThread;
+    private LedColor prevColor;
+    private LedColor newColor;
+    private boolean isBlinking;
+    private int blinkDuration;
+    private int blinkCount;
+
+    private ElapsedTime blinkTimer = new ElapsedTime();
     public Led(HardwareMap hardwareMap, String ledName){
         String greenLedName = "green" + ledName;
         String redLedName = "red" + ledName;
@@ -22,16 +31,9 @@ public class Led {
         redLed = hardwareMap.get(DigitalChannel.class, redLedName);
 
         currentColor = LedColor.NONE;
-        blinkThread = null;
+        isBlinking = false;
     }
     public void setColor(LedColor state){
-        setColor(state, false);
-    }
-    public void setColor(LedColor state, boolean threadCall){
-        if(!threadCall && blinkThread != null){
-            blinkThread.interrupt();
-            blinkThread = null;
-        }
         currentColor = state;
         switch(state){
             case NONE:
@@ -53,22 +55,34 @@ public class Led {
                 break;
         }
     }
-    public void blink(LedColor newColor, int duration, int count) {
-        LedColor previousColor = currentColor;
-        blinkThread = new Thread(() -> {
-            try {
-                for (int i = 0; i < count; i++) {
-                    setColor(newColor, true);
-                    Thread.sleep(duration);
-                    setColor(previousColor, true);
-                    Thread.sleep(duration);
+
+    public void process() {
+        if (isBlinking) {
+            if (blinkCount > 0) {
+                if (blinkTimer.milliseconds() >= blinkDuration) {
+                    // Toggle LED color
+                    if(currentColor == newColor){
+                        setColor(prevColor);
+                    } else {
+                        setColor(newColor);
+                    }
+                    blinkCount--;
+                    blinkTimer.reset();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                setColor(previousColor);
+            } else{
+                isBlinking = false;
+                setColor(prevColor);
             }
-        });
-        blinkThread.start();
+        }
     }
+
+    public void blink(LedColor newColor, int duration, int count){
+        prevColor = currentColor;
+        this.newColor = newColor;
+        blinkTimer.reset();
+        blinkCount = count;
+        blinkDuration = duration;
+        isBlinking = true;
+    }
+
 }

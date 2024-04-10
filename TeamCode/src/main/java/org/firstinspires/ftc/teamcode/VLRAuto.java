@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.hardware.DistanceSensors;
 import org.firstinspires.ftc.teamcode.hardware.FrontCamera;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
 import org.firstinspires.ftc.teamcode.helpers.AutoConfigurator;
+import org.firstinspires.ftc.teamcode.helpers.Constants;
 import org.firstinspires.ftc.teamcode.helpers.ManualConfigurator;
 
 @Photon
@@ -66,10 +67,10 @@ public class VLRAuto extends LinearOpMode {
         // Left or right
         boolean isLeft = propPosition == FrontCamera.PropPos.LEFT;
 
-        double xDelta = (-12 + cfg.ROBOT_WIDTH / 2) + 2.5;
+        double xDelta = (-12 + Constants.ROBOT_WIDTH / 2) + 2.5;
         xDelta = isLeft ? xDelta : -xDelta;
 
-        double yDelta = (24 * 2 - cfg.ROBOT_LENGTH / 2) - 8; // Position of prop relative to start point
+        double yDelta = (24 * 2 - Constants.ROBOT_LENGTH / 2) - 8; // Position of prop relative to start point
 
         int allianceCoef = isRed ? 1 : -1; // 1 for red, -1 for blue
 
@@ -77,15 +78,13 @@ public class VLRAuto extends LinearOpMode {
                 (!isRed && isNearBackboard && propPosition == FrontCamera.PropPos.LEFT);
 
         // Failsafe
-
-
         if (isSidecase) {
             navBuilder = navBuilder.splineToLinearHeading(new Pose2d(xDelta + 24 + 14.0, // todo adjust live
                     startPose.position.y + allianceCoef * yDelta,
                     Math.toRadians(180)), Math.toRadians(180));
         } else {
             if (propPosition == FrontCamera.PropPos.CENTER) {
-                yDelta = -24 - cfg.ROBOT_LENGTH / 2.0 - 4.2;
+                yDelta = -24 - Constants.ROBOT_LENGTH / 2.0 - 4.2;
                 navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
             } else {
                 telemetry.addData("MAIN", "xDelta: " + xDelta);

@@ -29,7 +29,6 @@ public class FrontCamera {
 
     public List<AprilTagDetection> aprilTagDetections = new ArrayList<>();
 
-
     public static PropPos defaultPosition = PropPos.NONE;
 
     public enum PropPos {
