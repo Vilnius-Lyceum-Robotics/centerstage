@@ -15,16 +15,19 @@ import org.firstinspires.ftc.teamcode.hardware.Claw;
 import org.firstinspires.ftc.teamcode.hardware.DistanceSensors;
 import org.firstinspires.ftc.teamcode.hardware.FrontCamera;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
-import org.firstinspires.ftc.teamcode.helpers.AutoConfigurator;
+import org.firstinspires.ftc.teamcode.helpers.AutoConfig;
 import org.firstinspires.ftc.teamcode.helpers.Constants;
 import org.firstinspires.ftc.teamcode.helpers.ManualConfigurator;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Photon
 @Autonomous
 public class VLRAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        AutoConfigurator autoConfigurator = new AutoConfigurator();
+        AutoConfig autoConfigurator = new AutoConfig();
         ManualConfigurator manualConfigurator = new ManualConfigurator(telemetry, new GamepadEx(gamepad1));
 
         boolean isRed = manualConfigurator.upDownSelect("Red", "Blue");
@@ -36,7 +39,8 @@ public class VLRAuto extends LinearOpMode {
         FrontCamera cam = new FrontCamera(hardwareMap, isRed);
 
         Claw claw = new Claw(hardwareMap);
-        DistanceSensors distanceSensors = new DistanceSensors(hardwareMap);
+        ExecutorService es = Executors.newCachedThreadPool();
+        DistanceSensors distanceSensors = new DistanceSensors(es, hardwareMap);
         Lift lift = new Lift(hardwareMap, claw, distanceSensors);
 
         Pose2d startPose = autoConfigurator.getStartPos(isRed, isNearBackboard);

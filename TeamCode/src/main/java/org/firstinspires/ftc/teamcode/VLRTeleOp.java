@@ -16,6 +16,9 @@ import org.firstinspires.ftc.teamcode.hardware.PullUp;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
 import org.firstinspires.ftc.teamcode.helpers.ModeManager;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Photon
 @TeleOp(name = "VLRTeleOp")
 public class VLRTeleOp extends LinearOpMode {
@@ -28,8 +31,9 @@ public class VLRTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        DistanceSensors distanceSensors = new DistanceSensors(hardwareMap);
-        ClawSensors clawSensors = new ClawSensors(hardwareMap);
+        ExecutorService es = Executors.newCachedThreadPool();
+        DistanceSensors distanceSensors = new DistanceSensors(es, hardwareMap);
+        ClawSensors clawSensors = new ClawSensors(es, hardwareMap);
         Chassis chassis = new Chassis(hardwareMap, distanceSensors);
         GamepadEx gamepadEx = new GamepadEx(gamepad1);
         PullUp pullup = new PullUp(hardwareMap);
