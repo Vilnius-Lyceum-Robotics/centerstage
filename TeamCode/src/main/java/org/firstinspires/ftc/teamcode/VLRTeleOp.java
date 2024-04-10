@@ -65,15 +65,12 @@ public class VLRTeleOp extends LinearOpMode {
 
             distanceSensors.process();
 
-//            telemetry.addData("Distance between sensors",  "%.2f %.2f", distanceSensors.getMinDistance(), distanceSensors.getMaxDistance());
             telemetry.addData("Distance between sensors",  "%.2f %.2f", distanceSensors.getLeftDistance(), distanceSensors.getRightDistance());
             telemetry.addData("Angle between sensors", "%.2f", distanceSensors.getAngle());
             telemetry.addData("Mode", ModeManager.getMode());
             telemetry.addData("---------", "---------");
             telemetry.addData("Last loop ms", lastLooptime);
             telemetry.update();
-//            System.out.println("Distance between sensors: " + distanceSensors.getRawLeft() + " " + distanceSensors.getRawRight());
-            //System.out.println("Angle between sensors: " + distanceSensors.getAngle());
             lastLooptime = (int) looptime.milliseconds();
         }
     }
