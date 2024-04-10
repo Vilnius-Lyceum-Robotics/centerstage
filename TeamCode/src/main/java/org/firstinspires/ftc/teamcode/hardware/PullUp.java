@@ -63,7 +63,7 @@ public class PullUp {
     }
 
     public void toggle() {
-        if (state == State.DOWN) up();
+        if (state == State.DOWN || state == State.PULLUP) up();
         else pullUp();
 
     }

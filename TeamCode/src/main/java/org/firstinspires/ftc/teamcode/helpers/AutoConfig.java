@@ -2,13 +2,13 @@ package org.firstinspires.ftc.teamcode.helpers;
 
 import com.acmerobotics.roadrunner.Pose2d;
 
-public class AutoConfigurator {
+public class AutoConfig {
     private final Pose2d RED_NEAR_BACKBOARD;
     private final Pose2d RED_NEAR_AUDIENCE;
     private final Pose2d BLUE_NEAR_BACKBOARD;
     private final Pose2d BLUE_NEAR_AUDIENCE;
 
-    public AutoConfigurator() {
+    public AutoConfig() {
         RED_NEAR_BACKBOARD = new Pose2d(Constants.PLATE_DIMENSION / 2.0, ( -Constants.FIELD_DIMENSION + Constants.ROBOT_LENGTH ) / 2.0, Math.toRadians(90));
         RED_NEAR_AUDIENCE = new Pose2d(-(Constants.PLATE_DIMENSION / 2.0 * 3.0), ( -Constants.FIELD_DIMENSION + Constants.ROBOT_LENGTH ) / 2.0, Math.toRadians(90));
         BLUE_NEAR_BACKBOARD = new Pose2d(Constants.PLATE_DIMENSION / 2.0,  ( Constants.FIELD_DIMENSION - Constants.ROBOT_LENGTH ) / 2.0, Math.toRadians(-90));
