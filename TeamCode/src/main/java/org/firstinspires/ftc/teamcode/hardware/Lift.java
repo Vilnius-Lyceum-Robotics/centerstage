@@ -60,7 +60,7 @@ public class Lift {
     }
 
     public void retract(){
-        if(extendedComponentId <= 0 || (distanceSensors.getMinDistance() >= FREE_DISTANCE && ModeManager.getMode() == ModeManager.Mode.BACKBOARD)) {
+        if(extendedComponentId <= 0) {
             return;
         }
         if (extendedComponentId == 2) {

@@ -42,23 +42,23 @@ public class Claw {
     }
 
     public void toggleLeft() {
-        if(clawState == ClawState.UP) {
+        if(clawState == ClawState.DOWN) {
             if (stateLeft == ClawState.CLOSED) setLeftPos(ClawState.OPEN);
             else setLeftPos(ClawState.CLOSED);
         }
         else{
-            if (stateLeft == ClawState.CLOSED) setRightPos(ClawState.OPEN);
+            if (stateRight == ClawState.CLOSED) setRightPos(ClawState.OPEN);
             else setRightPos(ClawState.CLOSED);
         }
     }
 
     public void toggleRight() {
-        if (clawState == ClawState.UP) {
+        if (clawState == ClawState.DOWN) {
             if (stateRight == ClawState.CLOSED) setRightPos(ClawState.OPEN);
             else setRightPos(ClawState.CLOSED);
         }
         else{
-            if (stateRight == ClawState.CLOSED) setLeftPos(ClawState.OPEN);
+            if (stateLeft == ClawState.CLOSED) setLeftPos(ClawState.OPEN);
             else setLeftPos(ClawState.CLOSED);
         }
     }
