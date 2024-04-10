@@ -59,7 +59,6 @@ public class FrontCamera {
                 .setTagLibrary(tagLibrary)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
-                .setLensIntrinsics(1493.422812, 1493.422812, 983.366398242, 553.266679092)
                 .build();
         if (!alliance) {
             final String[] LABELS = {
@@ -121,6 +120,7 @@ public class FrontCamera {
                 System.out.println("Tag Bearing (deg): " + detection.ftcPose.bearing);
             }
         }
+
         List<Recognition> recognitions = tfodProcessor.getRecognitions();
         for (Recognition recognition : recognitions) {
             if (recognition.getLabel().equals("blueprop") || recognition.getLabel().equals("redprop")) {
@@ -136,10 +136,11 @@ public class FrontCamera {
                 else if (f < 1250) teamPropPos = PropPos.CENTER;
                 else teamPropPos = PropPos.RIGHT;
                 propAng = f;
-                //System.out.println(f);
-                //System.out.println(teamPropPos);
+                System.out.println(f);
+                System.out.println(teamPropPos);
             }
         }
+
         // https://ftc-docs.firstinspires.org/en/latest/ftc_ml/index.html
         // https://ftc-docs.firstinspires.org/en/latest/ftc_ml/managing_tool/create_videos/create-videos.html
     }

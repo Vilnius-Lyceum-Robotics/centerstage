@@ -3,9 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -13,7 +11,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.hardware.Claw;
-import org.firstinspires.ftc.teamcode.hardware.DistanceSensors;
 import org.firstinspires.ftc.teamcode.hardware.FrontCamera;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
 import org.firstinspires.ftc.teamcode.helpers.AutoConfig;
@@ -24,13 +21,14 @@ import org.firstinspires.ftc.teamcode.helpers.PreGameConfigurator;
 public class VLRAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        AutoConfig cfg = new AutoConfig();
-        PreGameConfigurator configurator = new PreGameConfigurator(telemetry, new GamepadEx(gamepad1));
-        boolean isRed = configurator.upDownSelect("Red", "Blue");
-        boolean isNearBackboard = configurator.leftRightSelect("Backboard", "Audience");
+        AutoConfigurator autoConfigurator = new AutoConfigurator();
+        ManualConfigurator manualConfigurator = new ManualConfigurator(telemetry, new GamepadEx(gamepad1));
 
-        boolean shouldWait = configurator.upDownSelect("Wait 5s", "Do not wait");
-        boolean shouldMoveLeft = configurator.leftRightSelect("Park to the side", "Do not move");
+        boolean isRed = manualConfigurator.upDownSelect("Red", "Blue");
+        boolean isNearBackboard = manualConfigurator.leftRightSelect("Backboard", "Audience");
+
+        boolean shouldWait = manualConfigurator.upDownSelect("Wait 5s", "Do not wait");
+        boolean shouldMoveLeft = manualConfigurator.leftRightSelect("Park to the side", "Do not move");
 
         FrontCamera cam = new FrontCamera(hardwareMap, isRed);
 
@@ -38,11 +36,13 @@ public class VLRAuto extends LinearOpMode {
         DistanceSensors distanceSensors = new DistanceSensors(hardwareMap);
         Lift lift = new Lift(hardwareMap, claw, distanceSensors);
 
-        Pose2d startPose = cfg.getStartPos(isRed, isNearBackboard);
+        Pose2d startPose = autoConfigurator.getStartPos(isRed, isNearBackboard);
 
         telemetry.addData("MAIN", "Ready to start");
         telemetry.update();
 
+        cam.process(5);
+        telemetry.addData("ANGLE", "%.3f", (float) cam.propAng);
         ///////////////////////////////////////////////
         waitForStart();
         ///////////////////////////////////////////////
@@ -67,10 +67,10 @@ public class VLRAuto extends LinearOpMode {
         // Left or right
         boolean isLeft = propPosition == FrontCamera.PropPos.LEFT;
 
-        double xDelta = (-12 + cfg.ROBOT_WIDTH / 2) + 2.5;
+        double xDelta = (-12 + Constants.ROBOT_WIDTH / 2) + 2.5;
         xDelta = isLeft ? xDelta : -xDelta;
 
-        double yDelta = (24 * 2 - cfg.ROBOT_LENGTH / 2) - 8; // Position of prop relative to start point
+        double yDelta = (24 * 2 - Constants.ROBOT_LENGTH / 2) - 8; // Position of prop relative to start point
 
         int allianceCoef = isRed ? 1 : -1; // 1 for red, -1 for blue
 
@@ -86,6 +86,8 @@ public class VLRAuto extends LinearOpMode {
                     Math.toRadians(180)), Math.toRadians(180));
         } else {
             if (propPosition == FrontCamera.PropPos.CENTER) {
+                yDelta = -24 - Constants.ROBOT_LENGTH / 2.0 - 4.2;
+                navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
                 yDelta = -24 - cfg.ROBOT_LENGTH / 2.0 - 4.2;
                 if (isNearBackboard) {
                     navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
@@ -142,10 +144,10 @@ public class VLRAuto extends LinearOpMode {
                         .splineToLinearHeading(new Pose2d(-72 + 24 * 1.5, -12 * allianceCoef, Math.toRadians(0)), Math.toRadians(0));
             } else {
                 // Move to the left / right
-                // TODO maybe instead of going around just go through the middle part?
-                navBuilder = navBuilder
+                navBuilder = navBuilder//.lineToX(-72 + 24 / 2 + 6.0) // todo adjust live
+
                         .splineToLinearHeading(new Pose2d(-72 + 24 / 2 + 10.0, (-24 - 12) * allianceCoef, Math.toRadians(allianceCoef * 90)), Math.toRadians(0), (pose2dDual, posePath, v) -> 10)
-                        .splineToLinearHeading(new Pose2d(-72 + 24 / 2 + 10.0, -12 * allianceCoef, Math.toRadians(0)), Math.toRadians(0), (pose2dDual, posePath, v) -> 15);
+                        .splineToLinearHeading(new Pose2d(-72 + 24 / 2 + 10.0, -12 * allianceCoef, Math.toRadians(180)), Math.toRadians(0), (pose2dDual, posePath, v) -> 15);
             }
             navBuilder = navBuilder.lineToX(0).lineToX(backboardX)
                     .setTangent(Math.PI / 2).lineToY(backboardY, (pose2dDual, posePath, v) -> 15).afterTime(0.1, () -> lift.setExtension(3));
