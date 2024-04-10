@@ -2,20 +2,20 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.lang.Thread;
 
-public class BackboardDistanceSensor {
+public class AsyncDistanceSensor {
     private final DistanceSensor distanceSensor;
     private final AtomicReference<Double> distanceValue = new AtomicReference<>(0.0);
     private final AtomicBoolean inFlight = new AtomicBoolean(false);
 
-    public BackboardDistanceSensor(HardwareMap hardwareMap, String sensorName){
+    public AsyncDistanceSensor(HardwareMap hardwareMap, String sensorName){
         distanceSensor = hardwareMap.get(DistanceSensor.class, sensorName);
     }
 
@@ -45,5 +45,4 @@ public class BackboardDistanceSensor {
     public double getDistance() {
         return distanceValue.get();
     }
-
 }
