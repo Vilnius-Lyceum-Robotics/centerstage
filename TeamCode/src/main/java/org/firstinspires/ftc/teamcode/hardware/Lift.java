@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.helpers.ModeManager;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -21,11 +23,10 @@ public class Lift {
     private DcMotor liftMotor;
     private TouchSensor limitSwitch;
     private Claw claw;
-    private Chassis chassis;
     private DistanceSensors distanceSensors;
     private static final int CALL_INTERVAL = 4; // ms
     private static final int LIFT_TIMEOUT = 2900; // ms * CALL_INTERVAL
-    private static final int FREE_DISTANCE = 6; // // the distance from the backboard needed to freely use the lift (in inches)
+    private static final int FREE_DISTANCE = 6; // the distance from the backboard needed to freely use the lift (in inches)
     private int currentTimeout; 
     private int extendedComponentId;
     private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));
@@ -53,18 +54,19 @@ public class Lift {
         if (extendedComponentId == 1) {
             claw.setLeftPos(Claw.ClawState.CLOSED);
             claw.setRightPos(Claw.ClawState.CLOSED);
-            chassis.setBackboardMode();
+            ModeManager.setBackboardMode();
         }
         extendedComponentId++;
     }
 
     public void retract(){
-        if(extendedComponentId <= 0 || (distanceSensors.getMinDistance() >= FREE_DISTANCE)) {
+        if(extendedComponentId <= 0 || (distanceSensors.getMinDistance() >= FREE_DISTANCE && ModeManager.getMode() == ModeManager.Mode.BACKBOARD)) {
             return;
         }
         if (extendedComponentId == 2) {
             claw.setLeftPos(Claw.ClawState.CLOSED);
             claw.setRightPos(Claw.ClawState.CLOSED);
+            ModeManager.setNormalMode();
         }
         extendedComponentId--;
     }
