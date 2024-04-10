@@ -23,8 +23,8 @@ public class VLRDemo extends LinearOpMode {
         GamepadEx gamepadEx = new GamepadEx(gamepad1);
         PullUp pullup = new PullUp(hardwareMap);
         Claw claw = new Claw(hardwareMap);
-        Lift lift = new Lift(hardwareMap, claw);
         DistanceSensors distanceSensors = new DistanceSensors(hardwareMap);
+        Lift lift = new Lift(hardwareMap, claw, distanceSensors);
 
 
         Chassis chassis = new Chassis(hardwareMap, distanceSensors);

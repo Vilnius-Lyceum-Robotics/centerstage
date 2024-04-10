@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.ftc.FlightRecorder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -42,9 +43,9 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         DcMotorEx rightBack = hardwareMap.get(DcMotorEx.class, "RightBack");
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "LeftFront");
 
-        leftBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//        leftBack.setMode(DcMotorEx.RunMode.RESET_ENCODERS);
+//        rightBack.setMode(DcMotorEx.RunMode.RESET_ENCODERS);
+//        leftFront.setMode(DcMotorEx.RunMode.RESET_ENCODERS);
 
         par0 = new OverflowEncoder(new RawEncoder(leftBack));
         par1 = new OverflowEncoder(new RawEncoder(rightBack));
