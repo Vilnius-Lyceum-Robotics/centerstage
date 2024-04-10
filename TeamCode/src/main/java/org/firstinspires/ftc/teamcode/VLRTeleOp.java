@@ -25,8 +25,7 @@ public class VLRTeleOp extends LinearOpMode {
         GamepadEx gamepadEx = new GamepadEx(gamepad1);
         PullUp pullup = new PullUp(hardwareMap);
         Claw claw = new Claw(hardwareMap);
-        Lift lift = new Lift(hardwareMap, claw, chassis, distanceSensors);
-
+        Lift lift = new Lift(hardwareMap, claw, distanceSensors);
         ElapsedTime looptime = new ElapsedTime();
         int lastLooptime = 0;
 

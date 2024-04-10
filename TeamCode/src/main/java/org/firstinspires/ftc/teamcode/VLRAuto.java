@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.outoftheboxrobotics.photoncore.Photon;
@@ -86,7 +87,12 @@ public class VLRAuto extends LinearOpMode {
         } else {
             if (propPosition == FrontCamera.PropPos.CENTER) {
                 yDelta = -24 - cfg.ROBOT_LENGTH / 2.0 - 4.2;
-                navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
+                if (isNearBackboard) {
+                    navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
+                } else {
+                    navBuilder = navBuilder.lineToY((yDelta + 18 + 4.2) * allianceCoef).turnTo(Math.toRadians(-90));
+
+                }
             } else {
                 telemetry.addData("MAIN", "xDelta: " + xDelta);
                 telemetry.update();
@@ -108,8 +114,11 @@ public class VLRAuto extends LinearOpMode {
 
         navBuilder = navBuilder.stopAndAdd(telemetryPacket -> false).waitSeconds(0.1).afterTime(0, () -> claw.setLeftPos(Claw.ClawState.OPEN)).waitSeconds(0.3);
 
-        if (propPosition == FrontCamera.PropPos.CENTER)
+        if (propPosition == FrontCamera.PropPos.CENTER && isNearBackboard)
             navBuilder = navBuilder.lineToY((yDelta - 3.5) * allianceCoef);
+        else if (propPosition == FrontCamera.PropPos.CENTER) {
+            navBuilder = navBuilder.turnTo(0);
+        }
 
         // Move to backboard
         double backboardX = 72 - 24 - 6.5;
@@ -122,11 +131,12 @@ public class VLRAuto extends LinearOpMode {
 
         if (!isNearBackboard) {
             // Is in audience side
-            if (propPosition != FrontCamera.PropPos.CENTER) {
+            if (true) { //propPosition != FrontCamera.PropPos.CENTER) {
                 // Advance forward, no need to dodge
                 navBuilder = navBuilder
-                        .lineToX(-72 + 24 * 1.5 - allianceCoef * (propPosition == FrontCamera.PropPos.LEFT ? -2 : 2))
-                        .turnTo(Math.toRadians(95 * allianceCoef))
+                        .lineToX(-72 + 24 * 1.5 - allianceCoef * (propPosition == FrontCamera.PropPos.LEFT ? -4 : 4))
+                        .setTangent(Math.toRadians(90))
+                        //.turnTo(Math.toRadians(95 * allianceCoef))
                         .lineToY(-12 * allianceCoef)
                         // .splineToLinearHeading(new Pose2d(-40, allianceCoef * (-24 + 0.0),  0), 0)
                         .splineToLinearHeading(new Pose2d(-72 + 24 * 1.5, -12 * allianceCoef, Math.toRadians(0)), Math.toRadians(0));
@@ -135,11 +145,10 @@ public class VLRAuto extends LinearOpMode {
                 // TODO maybe instead of going around just go through the middle part?
                 navBuilder = navBuilder
                         .splineToLinearHeading(new Pose2d(-72 + 24 / 2 + 10.0, (-24 - 12) * allianceCoef, Math.toRadians(allianceCoef * 90)), Math.toRadians(0), (pose2dDual, posePath, v) -> 10)
-                        .splineToLinearHeading(new Pose2d(-72 + 24 / 2 + 10.0, -12 * allianceCoef, Math.toRadians(180)), Math.toRadians(0), (pose2dDual, posePath, v) -> 15);
+                        .splineToLinearHeading(new Pose2d(-72 + 24 / 2 + 10.0, -12 * allianceCoef, Math.toRadians(0)), Math.toRadians(0), (pose2dDual, posePath, v) -> 15);
             }
             navBuilder = navBuilder.lineToX(0).lineToX(backboardX)
-                    .afterTime(0, () -> lift.setExtension(3))
-                    .setTangent(Math.PI / 2).lineToY(backboardY);
+                    .setTangent(Math.PI / 2).lineToY(backboardY, (pose2dDual, posePath, v) -> 15).afterTime(0.1, () -> lift.setExtension(3));
         } else {
             // can just proceed to backboard
             if (propPosition == FrontCamera.PropPos.CENTER) {
@@ -156,7 +165,7 @@ public class VLRAuto extends LinearOpMode {
                         .lineToY(backboardY, (pose2dDual, posePath, v) -> 15);
             }
         }
-        navBuilder = navBuilder.afterTime(0, () -> lift.shouldContinueAutonomousLoop.set(false)); // Stop lift loop to not hang when running (switch trajectory)
+        navBuilder = navBuilder.stopAndAdd(telemetryPacket -> false).afterTime(0.5, () -> lift.shouldContinueAutonomousLoop.set(false)); // Stop lift loop to not hang when running (switch trajectory)
 
 
         //////////////////////////////////////////////////////////
