@@ -11,8 +11,9 @@ public class PreGameConfigurator {
     Telemetry telemetry;
     GamepadEx gamepadEx;
 
-    public PreGameConfigurator(Telemetry telemetry) {
+    public PreGameConfigurator(Telemetry telemetry, GamepadEx gamepadEx) {
         this.telemetry = telemetry;
+        this.gamepadEx = gamepadEx;
     }
 
     public boolean leftRightSelect(String trueOption, String falseOption) throws InterruptedException {

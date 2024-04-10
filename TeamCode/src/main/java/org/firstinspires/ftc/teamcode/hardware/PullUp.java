@@ -6,26 +6,80 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class PullUp {
     DcMotor left;
     DcMotor right;
+    enum State {
+        DOWN(0),
+        UP(3050),
+        PULLUP(600);
+
+        public final int value;
+        private State(int val) {
+            value = val;
+        }
+    }
+
+    State state = State.DOWN;
+
     public PullUp(HardwareMap hardwareMap) {
         left = hardwareMap.get(DcMotor.class, "leftPullup");
         right = hardwareMap.get(DcMotor.class, "rightPullup");
 
         left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        down();
     }
 
-    public void up() {
+    private void moveLeftMotor(int pos) {
+        left.setTargetPosition(-pos);
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         left.setPower(1);
-        right.setPower(-1);
     }
 
-    public void down() {
-        left.setPower(-1);
+    private void moveRightMotor(int pos) {
+        right.setTargetPosition(pos);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right.setPower(1);
     }
 
-    public void stop() {
+    public void up() {
+        moveLeftMotor(State.UP.value);
+        moveRightMotor(State.UP.value);
+        state = State.UP;
+    }
+
+    public void down() {
+        moveLeftMotor(State.DOWN.value);
+        moveRightMotor(State.DOWN.value);
+        state = State.DOWN;
+    }
+
+    public void pullUp() {
+        moveLeftMotor(State.PULLUP.value);
+        moveRightMotor(State.PULLUP.value);
+        state = State.PULLUP;
+    }
+
+    public void toggle() {
+        if (state == State.DOWN) up();
+        else pullUp();
+
+    }
+
+    private void stopLeftMotor() {
         left.setPower(0);
+        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    private void stopRightMotor() {
         right.setPower(0);
+        right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void stop() {
+        stopLeftMotor();
+        stopRightMotor();
     }
 }

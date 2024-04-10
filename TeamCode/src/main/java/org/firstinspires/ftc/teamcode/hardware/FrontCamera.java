@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 
+import static android.os.SystemClock.sleep;
+
 import android.util.Size;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -28,20 +30,13 @@ public class FrontCamera {
     public List<AprilTagDetection> aprilTagDetections = new ArrayList<>();
 
 
-    public static PropPos defaultPosition = PropPos.LEFT;
-
-    public double processBackboard(PropPos propPosition) {
-        return 0;
-    }
-
-    public double distToBoard() {
-        return 0;
-    }
+    public static PropPos defaultPosition = PropPos.NONE;
 
     public enum PropPos {
         LEFT,
         CENTER,
-        RIGHT
+        RIGHT,
+        NONE
     }
 
     public boolean hasTeamProp = false;
@@ -64,6 +59,7 @@ public class FrontCamera {
                 .setTagLibrary(tagLibrary)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
+                .setLensIntrinsics(1493.422812, 1493.422812, 983.366398242, 553.266679092)
                 .build();
         if (!alliance) {
             final String[] LABELS = {
@@ -98,8 +94,8 @@ public class FrontCamera {
                 .setCamera(webcamName)
                 .addProcessor(aprilTagProcessor)
                 .addProcessor(tfodProcessor)
-                .setCameraResolution(new Size(640, 480))
-                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+                .setCameraResolution(new Size(1920, 1080))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableLiveView(true)
                 .setAutoStopLiveView(true)
                 .build();
@@ -125,28 +121,44 @@ public class FrontCamera {
                 System.out.println("Tag Bearing (deg): " + detection.ftcPose.bearing);
             }
         }
-
         List<Recognition> recognitions = tfodProcessor.getRecognitions();
         for (Recognition recognition : recognitions) {
             if (recognition.getLabel().equals("blueprop") || recognition.getLabel().equals("redprop")) {
                 hasTeamProp = true;
 
-                System.out.println("DETECTED");
-                double f = recognition.estimateAngleToObject(AngleUnit.DEGREES);
-                if (f < -2) teamPropPos = PropPos.CENTER;
+                //System.out.println("DETECTED");
+                double f = recognition.getLeft();
+                //System.out.println(f);
+                // left iki 450
+                // center nuo 450 iki 1250
+                // right po 1250
+                if (f < 450) teamPropPos = PropPos.LEFT;
+                else if (f < 1250) teamPropPos = PropPos.CENTER;
                 else teamPropPos = PropPos.RIGHT;
                 propAng = f;
-                System.out.println(f);
-                System.out.println(teamPropPos);
+                //System.out.println(f);
+                //System.out.println(teamPropPos);
             }
         }
-
         // https://ftc-docs.firstinspires.org/en/latest/ftc_ml/index.html
         // https://ftc-docs.firstinspires.org/en/latest/ftc_ml/managing_tool/create_videos/create-videos.html
     }
 
     public void process(int times) {
         for (int i = 0; i < times; i++) {
+            process();
+        }
+    }
+
+    public void process(int times, int sleepMs) {
+        for (int i = 0; i < times; i++) {
+            process();
+            sleep(sleepMs);
+        }
+    }
+
+    public void processUntilDetection() {
+        while (teamPropPos != PropPos.NONE) {
             process();
         }
     }
