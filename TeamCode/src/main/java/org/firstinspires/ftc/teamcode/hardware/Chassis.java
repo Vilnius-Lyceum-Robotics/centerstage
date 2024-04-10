@@ -18,6 +18,8 @@ public class Chassis {
     private double power = 0.2;
     private double xPower = 1;
 
+    private double yPower = 1;
+
     public Chassis(HardwareMap hardwareMap, DistanceSensors distanceSensors) {
 
         MotorLeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
@@ -59,6 +61,8 @@ public class Chassis {
         if (ModeManager.getMode() == ModeManager.Mode.NORMAL || !distanceSensors.makesSense()) {
             leftPower = power;
             rightPower = power;
+            yPower = 1;
+            xPower=1;
         } else if (ModeManager.getMode() == ModeManager.Mode.BACKBOARD && distanceSensors.getMinDistance() >= stoppingDistance) {
             double leftDistance = distanceSensors.getLeftDistance();
             double rightDistance = distanceSensors.getRightDistance();
@@ -84,10 +88,13 @@ public class Chassis {
 
             leftPower = leftDistance / greaterDistance * decelCoefficient;
             rightPower = rightDistance / greaterDistance * decelCoefficient;
+            yPower=1;
+            xPower=1;
         } else {
             leftPower = power;
             rightPower = power;
-            yVector = 0.2;
+            yPower = 0;
+            xPower = 0.4;
             vectorHeading = 0;
         }
 
@@ -95,10 +102,10 @@ public class Chassis {
 
         // Normalizing speeds if any of them exceed the maximum speed of 1
         double max = Math.abs(wheelSpeeds[0]);
-        wheelSpeeds[0] = vectorHeading - xVector * xPower + yVector; // Back Left
-        wheelSpeeds[1] = -vectorHeading - xVector * xPower + yVector; // Front Left
-        wheelSpeeds[2] = -vectorHeading + xVector * xPower + yVector; // Back Right
-        wheelSpeeds[3] = vectorHeading + xVector * xPower + yVector; // Front Right
+        wheelSpeeds[0] = vectorHeading - xVector * xPower + yVector * yPower; // Back Left
+        wheelSpeeds[1] = -vectorHeading - xVector * xPower + yVector * yPower; // Front Left
+        wheelSpeeds[2] = -vectorHeading + xVector * xPower + yVector * yPower; // Back Right
+        wheelSpeeds[3] = vectorHeading + xVector * xPower + yVector * yPower; // Front Right
 
         for (double wheelSpeed : wheelSpeeds) max = Math.max(max, Math.abs(wheelSpeed));
         if (max > 1) {
