@@ -10,16 +10,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.lang.Thread;
 
-public class MyDistanceSensor {
+public class BackboardDistanceSensor {
     private final DistanceSensor distanceSensor;
     private final AtomicReference<Double> distanceValue = new AtomicReference<>(0.0);
     private final AtomicBoolean inFlight = new AtomicBoolean(false);
 
-    public MyDistanceSensor(HardwareMap hardwareMap, String sensorName){
+    public BackboardDistanceSensor(HardwareMap hardwareMap, String sensorName){
         distanceSensor = hardwareMap.get(DistanceSensor.class, sensorName);
     }
 
-    private CompletableFuture<Double> getRawDistance(){
+    private CompletableFuture<Double> getRawDistanceAsync(){
         CompletableFuture<Double> completableFuture = new CompletableFuture<>();
 
         Executors.newCachedThreadPool().submit(() -> {
@@ -32,10 +32,10 @@ public class MyDistanceSensor {
         return completableFuture;
     }
 
-    public void fetchDistanceAsync() {
+    public void process() {
         if (!inFlight.get()) {
             inFlight.set(true);
-            getRawDistance().thenAccept(distance ->{
+            getRawDistanceAsync().thenAccept(distance ->{
                 distanceValue.set(distance);
                 inFlight.set(false);
             });
