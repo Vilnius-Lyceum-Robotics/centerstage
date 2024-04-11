@@ -66,7 +66,10 @@ public class VLRTeleOp extends LinearOpMode {
             chassis.setPower(1 - gamepadEx.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 0.75);
 
             chassis.drive(new Pose2d(gamepadEx.getLeftX(), gamepadEx.getLeftY(), gamepadEx.getRightX()));
-            lift.process(automaticLift);
+
+            if (lift.encoderIsEnabled()) {
+                lift.process(automaticLift);
+            }
 
 
             if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
@@ -134,7 +137,7 @@ public class VLRTeleOp extends LinearOpMode {
 //                }
 
                 // both claws closed - and both have pixel, lift go to position 1
-                if(automaticLift.get() && claw.rightIsClosed() && claw.leftIsClosed() && clawSensors.isCloseLeft() && clawSensors.isCloseRight()){
+                if (automaticLift.get() && claw.rightIsClosed() && claw.leftIsClosed() && clawSensors.isCloseLeft() && clawSensors.isCloseRight()) {
                     lift.setExtension(1);
                     automaticLift.set(false);
                 }

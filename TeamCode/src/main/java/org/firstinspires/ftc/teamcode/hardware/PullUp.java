@@ -18,6 +18,7 @@ public class PullUp {
     }
 
     State state = State.DOWN;
+    private boolean encodersEnabled = true;
 
     public PullUp(HardwareMap hardwareMap) {
         left = hardwareMap.get(DcMotor.class, "leftPullup");
@@ -45,24 +46,28 @@ public class PullUp {
     }
 
     public void up() {
+        if(!encodersEnabled) return;
         moveLeftMotor(State.UP.value);
         moveRightMotor(State.UP.value);
         state = State.UP;
     }
 
     public void down() {
+        if(!encodersEnabled) return;
         moveLeftMotor(State.DOWN.value);
         moveRightMotor(State.DOWN.value);
         state = State.DOWN;
     }
 
     public void pullUp() {
+        if(!encodersEnabled) return;
         moveLeftMotor(State.PULLUP.value);
         moveRightMotor(State.PULLUP.value);
         state = State.PULLUP;
     }
 
     public void toggle() {
+        if(!encodersEnabled) return;
         if (state == State.DOWN || state == State.PULLUP) up();
         else pullUp();
 
@@ -76,6 +81,29 @@ public class PullUp {
     private void stopRightMotor() {
         right.setPower(0);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void disableEncoders() {
+        encodersEnabled = false;
+        left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public void enableEncoders(){
+        encodersEnabled = true;
+        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void toggleEncoders(){
+        if(encodersEnabled) disableEncoders();
+        else enableEncoders();
+    }
+
+    public void setManualPower(double power){
+        if(encodersEnabled) return;
+        left.setPower(power);
+        right.setPower(power);
     }
 
     public void stop() {
