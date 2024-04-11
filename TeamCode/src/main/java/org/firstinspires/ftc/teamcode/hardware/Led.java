@@ -2,87 +2,120 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.helpers.Constants;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Led {
-    private DigitalChannel greenLed;
-    private DigitalChannel redLed;
+    DigitalChannel red;
+    DigitalChannel green;
 
-    private enum LedColor {
+
+    public enum Color {
         NONE,
-        GREEN,
         RED,
+        GREEN,
         AMBER
     }
-    private LedColor currentColor;
-    private LedColor prevColor;
-    private LedColor newColor;
-    private boolean isBlinking;
-    private int blinkDuration;
-    private int blinkCount;
 
-    private ElapsedTime blinkTimer = new ElapsedTime();
-    public Led(HardwareMap hardwareMap, String ledName){
-        String greenLedName = "green" + ledName;
-        String redLedName = "red" + ledName;
-        greenLed = hardwareMap.get(DigitalChannel.class, greenLedName);
-        redLed = hardwareMap.get(DigitalChannel.class, redLedName);
+    private final AtomicReference<Color> prevColor = new AtomicReference<>(Color.NONE);
 
-        currentColor = LedColor.NONE;
-        isBlinking = false;
+    private final AtomicReference<Color> currentColor = new AtomicReference<>(Color.NONE);
+
+    private final AtomicReference<Integer> blinkMs = new AtomicReference<>(-1);
+
+    private final AtomicBoolean inFlight = new AtomicBoolean(false);
+
+    private ExecutorService es;
+
+    public Led(HardwareMap hardwareMap, String name, ExecutorService executorService) {
+        red = hardwareMap.get(DigitalChannel.class, "red" + name);
+        green = hardwareMap.get(DigitalChannel.class, "green" + name);
+
+        red.setMode(DigitalChannel.Mode.OUTPUT);
+        green.setMode(DigitalChannel.Mode.OUTPUT);
+
+        es = executorService;
     }
-    public void setColor(LedColor state){
-        currentColor = state;
-        switch(state){
-            case NONE:
-                greenLed.setState(false);
-                redLed.setState(false);
-                break;
-            case GREEN:
-                greenLed.setState(true);
-                redLed.setState(false);
-                break;
-            case RED:
-                greenLed.setState(false);
-                redLed.setState(true);
 
-                break;
-            case AMBER:
-                greenLed.setState(true);
-                redLed.setState(true);
-                break;
-        }
+    public void setColor(Color color) {
+        if (currentColor.get() == color) return;
+        prevColor.set(currentColor.get());
+        currentColor.set(color);
+        blinkMs.set(-1);
+    }
+
+    public void blink(int ms) {
+        blinkMs.set(ms);
+    }
+
+    private CompletableFuture<Integer> processRaw() {
+
+        CompletableFuture<Integer> completableFuture = new CompletableFuture<>();
+
+        es.submit(() -> {
+            if (prevColor.get() != currentColor.get() && blinkMs.get() < 0) {
+                switch (currentColor.get()) {
+                    case AMBER:
+                        red.setState(true);
+                        green.setState(true);
+                        break;
+                    case RED:
+                        red.setState(false);
+                        green.setState(true);
+                        break;
+                    case GREEN:
+                        red.setState(true);
+                        green.setState(false);
+                        break;
+                    case NONE:
+                        red.setState(false);
+                        green.setState(false);
+                        break;
+                }
+                prevColor.set(currentColor.get());
+            } else if (blinkMs.get() >= 0) {
+                if (System.currentTimeMillis() % (2L * blinkMs.get()) < blinkMs.get()) {
+                    red.setState(true);
+                    green.setState(true);
+                } else {
+                    switch (currentColor.get()) {
+                        case AMBER:
+                            red.setState(false);
+                            green.setState(false);
+                            break;
+                        case RED:
+                            red.setState(false);
+                            green.setState(true);
+                            break;
+                        case GREEN:
+                            red.setState(true);
+                            green.setState(false);
+                            break;
+                        case NONE:
+                            red.setState(true);
+                            green.setState(true);
+                            break;
+                    }
+                }
+            }
+            completableFuture.complete(0);
+        });
+
+        return  completableFuture;
     }
 
     public void process() {
-        if (isBlinking) {
-            if (blinkCount > 0) {
-                if (blinkTimer.milliseconds() >= blinkDuration) {
-                    // Toggle LED color
-                    if(currentColor == newColor){
-                        setColor(prevColor);
-                    } else {
-                        setColor(newColor);
-                    }
-                    blinkCount--;
-                    blinkTimer.reset();
-                }
-            } else{
-                isBlinking = false;
-                setColor(prevColor);
-            }
+        if (!inFlight.get()) {
+            inFlight.set(true);
+            processRaw().thenAccept(nulis -> {
+                inFlight.set(false);
+            });
         }
-    }
-
-    public void blink(LedColor newColor, int duration, int count){
-        prevColor = currentColor;
-        this.newColor = newColor;
-        blinkTimer.reset();
-        blinkCount = count;
-        blinkDuration = duration;
-        isBlinking = true;
     }
 
 }

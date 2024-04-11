@@ -2,10 +2,10 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Claw {
     Servo left, right, rotator;
-
     public enum ClawState {
         OPEN,
         CLOSED,
@@ -15,7 +15,11 @@ public class Claw {
 
     ClawState stateLeft = ClawState.CLOSED;
     ClawState stateRight = ClawState.CLOSED;
-    private ClawState clawState;
+    private ClawState clawState = ClawState.DOWN;
+    private boolean closeAutomatically = true;
+    private final ElapsedTime manualTime = new ElapsedTime();
+
+    private final int manualMs = 2000;
 
     public Claw(HardwareMap hardwareMap) {
         left = hardwareMap.get(Servo.class, "leftClaw");
@@ -32,7 +36,12 @@ public class Claw {
     public ClawState getClawState() {
         return clawState;
     }
-
+    public boolean leftIsClosed() {
+        return stateLeft == ClawState.CLOSED;
+    }
+    public boolean rightIsClosed() {
+        return stateRight == ClawState.CLOSED;
+    }
     public void setUpClaw() {
         setClawState(ClawState.UP);
     }
@@ -41,7 +50,22 @@ public class Claw {
         setClawState(ClawState.DOWN);
     }
 
+    public boolean isAutomatic(){
+        if (!closeAutomatically && manualTime.milliseconds() > manualMs) closeAutomatically = true;
+        return closeAutomatically;
+    }
+
+    public void setAutomatic() {
+        closeAutomatically = true;
+    }
+
+    public void setManual() {
+        closeAutomatically = false;
+        manualTime.reset();
+    }
+
     public void toggleLeft() {
+        setManual();
         if(clawState == ClawState.DOWN) {
             if (stateLeft == ClawState.CLOSED) setLeftPos(ClawState.OPEN);
             else setLeftPos(ClawState.CLOSED);
@@ -53,6 +77,7 @@ public class Claw {
     }
 
     public void toggleRight() {
+        setManual();
         if (clawState == ClawState.DOWN) {
             if (stateRight == ClawState.CLOSED) setRightPos(ClawState.OPEN);
             else setRightPos(ClawState.CLOSED);

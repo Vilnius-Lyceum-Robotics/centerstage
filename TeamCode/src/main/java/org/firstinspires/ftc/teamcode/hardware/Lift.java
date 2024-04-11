@@ -109,6 +109,10 @@ public class Lift {
         liftMotor.setPower(1);
     }
 
+    public int getPosition() {
+        return extendedComponentId;
+    }
+
     public void process() {
         process(CALL_INTERVAL);
     }
