@@ -36,4 +36,8 @@ public class ClawSensors {
     public boolean isCloseRight() {
         return clawSensorRight.getDistance() <= RIGHT_TRIGGER_DISTANCE;
     }
+    public boolean isClose(Claw.Hand hand){
+        if(hand == Claw.Hand.LEFT) return isCloseLeft();
+        else return isCloseRight();
+    }
 }

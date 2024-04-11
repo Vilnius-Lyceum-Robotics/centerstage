@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -15,6 +17,7 @@ import org.firstinspires.ftc.teamcode.hardware.DistanceSensors;
 import org.firstinspires.ftc.teamcode.hardware.Led;
 import org.firstinspires.ftc.teamcode.hardware.PullUp;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
+import org.firstinspires.ftc.teamcode.helpers.BooleanState;
 import org.firstinspires.ftc.teamcode.helpers.ModeManager;
 
 import java.util.concurrent.ExecutorService;
@@ -30,8 +33,16 @@ public class VLRTeleOp extends LinearOpMode {
     private Claw claw;
     private ClawSensors clawSensors;
 
+    public BooleanState rightAutoOpen;
+    public BooleanState leftAutoOpen;
+    public BooleanState automaticLift;
+
     @Override
     public void runOpMode() {
+        rightAutoOpen = new BooleanState(true);
+        leftAutoOpen = new BooleanState(true);
+        automaticLift = new BooleanState(false);
+
         ExecutorService es = Executors.newCachedThreadPool();
         DistanceSensors distanceSensors = new DistanceSensors(es, hardwareMap);
         ClawSensors clawSensors = new ClawSensors(es, hardwareMap);
@@ -47,10 +58,6 @@ public class VLRTeleOp extends LinearOpMode {
         ElapsedTime looptime = new ElapsedTime();
         int lastLooptime = 0;
 
-
-        boolean rightAutoOpen = true;
-        boolean leftAutoOpen = true;
-
         waitForStart();
 
         while (opModeIsActive()) {
@@ -59,7 +66,7 @@ public class VLRTeleOp extends LinearOpMode {
             chassis.setPower(1 - gamepadEx.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 0.75);
 
             chassis.drive(new Pose2d(gamepadEx.getLeftX(), gamepadEx.getLeftY(), gamepadEx.getRightX()));
-            lift.process();
+            lift.process(automaticLift);
 
 
             if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
@@ -95,67 +102,78 @@ public class VLRTeleOp extends LinearOpMode {
             // isClose() = GREEN
             // pixel and closed = AMBER
 
+
             if (lift.getPosition() == 1) {
                 leftLed.setColor(Led.Color.RED);
                 leftLed.blink(500);
                 rightLed.setColor(Led.Color.RED);
                 rightLed.blink(500);
-                rightAutoOpen = true;
-                leftAutoOpen = true;
+                rightAutoOpen.set(true);
+                leftAutoOpen.set(true);
             } else {
 
-                if (claw.leftIsClosed() && clawSensors.isCloseLeft()) {
-                    leftLed.setColor(Led.Color.NONE);
-                } else if (!claw.leftIsClosed() && clawSensors.isCloseLeft()) {
-                    if (claw.isAutomatic() && lift.getPosition() == 0) {
-                        claw.setLeftPos(Claw.ClawState.CLOSED);
-                    }
-                    leftLed.setColor(Led.Color.GREEN);
-                } else if (claw.leftIsClosed()) {
+//                if (claw.isClosed(Claw.Hand.LEFT) && clawSensors.isCloseLeft()) {
+//                    leftLed.setColor(Led.Color.NONE);
+//                } else if (!claw.isClosed(Claw.Hand.LEFT) && clawSensors.isCloseLeft()) {
+//                    if (claw.isAutomatic() && lift.getPosition() == 0) {
+//                        claw.setPos(Claw.Hand.LEFT,Claw.ClawState.CLOSED);
+//                    }
+//                    leftLed.setColor(Led.Color.GREEN);
+//                } else if (claw.isClosed(Claw.Hand.LEFT)) {
+//
+//                    if(lift.getPosition() == 0 && leftAutoOpen){
+//                        claw.setPos(Claw.Hand.LEFT,Claw.ClawState.OPEN);
+//                        leftAutoOpen = false;
+//                    } else if(lift.getPosition() != 0) {
+//                        leftAutoOpen = true;
+//                    }
+//
+//                    leftLed.setColor(Led.Color.RED);
+//                } else {
+//                    leftLed.setColor(Led.Color.AMBER);
+//                }
 
-                    if(lift.getPosition() == 0 && leftAutoOpen){
-                        claw.setLeftPos(Claw.ClawState.OPEN);
-                        leftAutoOpen = false;
-                    } else if(lift.getPosition() != 0) {
-                        leftAutoOpen = true;
-                    }
-
-                    leftLed.setColor(Led.Color.RED);
-                } else {
-                    leftLed.setColor(Led.Color.AMBER);
+                // both claws closed - and both have pixel, lift go to position 1
+                if(automaticLift.get() && claw.rightIsClosed() && claw.leftIsClosed() && clawSensors.isCloseLeft() && clawSensors.isCloseRight()){
+                    lift.setExtension(1);
+                    automaticLift.set(false);
                 }
+                leftLed.setColor(Led.Color.NONE);
+                claw.manageClaw(ModeManager.getMode() == ModeManager.Mode.NORMAL ? leftLed : rightLed, Claw.Hand.LEFT, clawSensors, lift, leftAutoOpen);
+                claw.manageClaw(ModeManager.getMode() == ModeManager.Mode.NORMAL ? rightLed : leftLed, Claw.Hand.RIGHT, clawSensors, lift, rightAutoOpen);
 
-                if (claw.rightIsClosed() && clawSensors.isCloseRight()) {
-                    rightLed.setColor(Led.Color.NONE);
-                } else if (!claw.rightIsClosed() && clawSensors.isCloseRight()) {
-                    if (claw.isAutomatic() && lift.getPosition() == 0) {
-                        claw.setRightPos(Claw.ClawState.CLOSED);
-                    }
-                    rightLed.setColor(Led.Color.GREEN);
-                } else if (claw.rightIsClosed()) {
+//                if (claw.isClosed(Claw.Hand.RIGHT) && clawSensors.isCloseRight()) {
+//                    rightLed.setColor(Led.Color.NONE);
+//                } else if (!claw.isClosed(Claw.Hand.RIGHT) && clawSensors.isCloseRight()) {
+//                    if (claw.isAutomatic() && lift.getPosition() == 0) {
+//                        claw.setPos(Claw.Hand.RIGHT, Claw.ClawState.CLOSED);
+//                    }
+//                    rightLed.setColor(Led.Color.GREEN);
+//                } else if (claw.isClosed(Claw.Hand.RIGHT)) {
+//
+//                    if(lift.getPosition() == 0 && rightAutoOpen) {
+//                        claw.setPos(Claw.Hand.RIGHT, Claw.ClawState.OPEN);
+//                        rightAutoOpen = false;
+//                    } else if(lift.getPosition() != 0){
+//                        rightAutoOpen = true;
+//                    }
+//
+//                    rightLed.setColor(Led.Color.RED);
+//                } else {
+//                    rightLed.setColor(Led.Color.AMBER);
+//                }
+//            }
 
-                    if(lift.getPosition() == 0 && rightAutoOpen) {
-                        claw.setRightPos(Claw.ClawState.OPEN);
-                        rightAutoOpen = false;
-                    } else if(lift.getPosition() != 0){
-                        rightAutoOpen = true;
-                    }
-
-                    rightLed.setColor(Led.Color.RED);
-                } else {
-                    rightLed.setColor(Led.Color.AMBER);
-                }
+                telemetry.addData("CLaw Closed", "Right Claw Closed %b - Left Claw Closed $b", claw.isClosed(Claw.Hand.RIGHT), claw.isClosed(Claw.Hand.LEFT));
+                telemetry.addData("Claw sensors", "%.2f %.2f", clawSensors.getDistanceLeft(), clawSensors.getDistanceRight());
+                telemetry.addData("Distance between sensors", "%.2f %.2f", distanceSensors.getLeftDistance(), distanceSensors.getRightDistance());
+                telemetry.addData("Angle between sensors", "%.2f", distanceSensors.getAngle());
+                telemetry.addData("Mode", ModeManager.getMode());
+                telemetry.addData("---------", "---------");
+                telemetry.addData("Last loop ms", lastLooptime);
+                telemetry.update();
+                lastLooptime = (int) looptime.milliseconds();
             }
-
-            telemetry.addData("CLaw Closed", "Right Claw Closed %b - Left Claw Closed $b", claw.rightIsClosed(), claw.leftIsClosed());
-            telemetry.addData("Claw sensors", "%.2f %.2f", clawSensors.getDistanceLeft(), clawSensors.getDistanceRight());
-            telemetry.addData("Distance between sensors", "%.2f %.2f", distanceSensors.getLeftDistance(), distanceSensors.getRightDistance());
-            telemetry.addData("Angle between sensors", "%.2f", distanceSensors.getAngle());
-            telemetry.addData("Mode", ModeManager.getMode());
-            telemetry.addData("---------", "---------");
-            telemetry.addData("Last loop ms", lastLooptime);
-            telemetry.update();
-            lastLooptime = (int) looptime.milliseconds();
         }
     }
 }

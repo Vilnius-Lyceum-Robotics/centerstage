@@ -1,8 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.roadrunner.Arclength;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
+import com.acmerobotics.roadrunner.PosePath;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.outoftheboxrobotics.photoncore.Photon;
@@ -27,7 +33,7 @@ import java.util.concurrent.Executors;
 public class VLRAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        AutoConfig autoConfigurator = new AutoConfig();
+        AutoConfig autoConfig = new AutoConfig();
         ManualConfigurator manualConfigurator = new ManualConfigurator(telemetry, new GamepadEx(gamepad1));
 
         boolean isRed = manualConfigurator.upDownSelect("Red", "Blue");
@@ -43,7 +49,7 @@ public class VLRAuto extends LinearOpMode {
         DistanceSensors distanceSensors = new DistanceSensors(es, hardwareMap);
         Lift lift = new Lift(hardwareMap, claw, distanceSensors);
 
-        Pose2d startPose = autoConfigurator.getStartPos(isRed, isNearBackboard);
+        Pose2d startPose = autoConfig.getStartPos(isRed, isNearBackboard);
 
         telemetry.addData("MAIN", "Ready to start");
         telemetry.update();
@@ -88,18 +94,18 @@ public class VLRAuto extends LinearOpMode {
 
 
         if (isSidecase) {
-            navBuilder = navBuilder.splineToLinearHeading(new Pose2d(xDelta + 24 + 14.0, // todo adjust live
+            navBuilder = navBuilder.splineToLinearHeading(new Pose2d(xDelta + 24 + 10.5, // todo adjust live
                     startPose.position.y + allianceCoef * yDelta,
-                    Math.toRadians(180)), Math.toRadians(180));
+                    Math.toRadians(180)), Math.toRadians(180), (pose2dDual, posePath, v) -> 35);
         } else {
             if (propPosition == FrontCamera.PropPos.CENTER) {
-                yDelta = -24 - Constants.ROBOT_LENGTH / 2.0 - 4.2;
+                yDelta = -24 - Constants.ROBOT_LENGTH / 2.0;
                 navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
-                yDelta = -24 - Constants.ROBOT_LENGTH / 2.0 - 4.2;
+                //yDelta = -24 - Constants.ROBOT_LENGTH / 2.0 - 4.2;
                 if (isNearBackboard) {
                     navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
                 } else {
-                    navBuilder = navBuilder.lineToY((yDelta + 18 + 4.2) * allianceCoef).turnTo(Math.toRadians(-90));
+                    navBuilder = navBuilder.lineToY((yDelta + 18) * allianceCoef).turnTo(Math.toRadians(-90));
 
                 }
             } else {
@@ -126,7 +132,8 @@ public class VLRAuto extends LinearOpMode {
         if (propPosition == FrontCamera.PropPos.CENTER && isNearBackboard)
             navBuilder = navBuilder.lineToY((yDelta - 3.5) * allianceCoef);
         else if (propPosition == FrontCamera.PropPos.CENTER) {
-            navBuilder = navBuilder.turnTo(0);
+            navBuilder = navBuilder.lineToY(-10)
+                    .turnTo(0);
         }
 
         // Move to backboard
@@ -157,7 +164,7 @@ public class VLRAuto extends LinearOpMode {
                         .splineToLinearHeading(new Pose2d(-72 + 24 / 2 + 10.0, -12 * allianceCoef, Math.toRadians(180)), Math.toRadians(0), (pose2dDual, posePath, v) -> 15);
             }
             navBuilder = navBuilder.lineToX(0).lineToX(backboardX)
-                    .setTangent(Math.PI / 2).lineToY(backboardY, (pose2dDual, posePath, v) -> 15).afterTime(0.1, () -> lift.setExtension(3));
+                    .setTangent(Math.PI / 2).lineToY(backboardY, (pose2dDual, posePath, v) -> 15).afterTime(3, () -> lift.setExtension(3));
         } else {
             // can just proceed to backboard
             if (propPosition == FrontCamera.PropPos.CENTER) {
@@ -184,9 +191,9 @@ public class VLRAuto extends LinearOpMode {
         sleep(150);
 
         // Align X with backboard using distance sensors
-        double dist = distanceSensors.getMinDistance() - 2.9; // todo tune
+        double dist = distanceSensors.getMinDistance() - 2.2; // todo tune
         Actions.runBlocking(drive.actionBuilder(new Pose2d(backboardX, backboardY, 0))
-                .lineToX(backboardX + dist)
+                .lineToX(backboardX + dist, (pose2dDual, posePath, v) -> 15)
                 .build());
 
         sleep(500);
