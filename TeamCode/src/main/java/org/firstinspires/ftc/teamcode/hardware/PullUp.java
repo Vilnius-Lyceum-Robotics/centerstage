@@ -8,7 +8,7 @@ public class PullUp {
     DcMotor right;
     enum State {
         DOWN(0),
-        UP(3050),
+        UP(2950),
         PULLUP(600);
 
         public final int value;

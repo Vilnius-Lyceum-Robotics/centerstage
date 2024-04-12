@@ -45,6 +45,8 @@ public class VLRAuto extends LinearOpMode {
         FrontCamera cam = new FrontCamera(hardwareMap, isRed);
 
         Claw claw = new Claw(hardwareMap);
+        claw.setLeftPos(Claw.ClawState.OPEN);
+        claw.setRightPos(Claw.ClawState.OPEN);
         ExecutorService es = Executors.newCachedThreadPool();
         DistanceSensors distanceSensors = new DistanceSensors(es, hardwareMap);
         Lift lift = new Lift(hardwareMap, claw, distanceSensors);
@@ -59,6 +61,9 @@ public class VLRAuto extends LinearOpMode {
         ///////////////////////////////////////////////
         waitForStart();
         ///////////////////////////////////////////////
+
+        claw.setLeftPos(Claw.ClawState.CLOSED);
+        claw.setRightPos(Claw.ClawState.CLOSED);
         cam.processUntilDetection();
 //        telemetry.addData("ANGLE", "%.3f", (float) cam.propAng);
 //        telemetry.update();
@@ -94,8 +99,8 @@ public class VLRAuto extends LinearOpMode {
 
 
         if (isSidecase) {
-            navBuilder = navBuilder.splineToLinearHeading(new Pose2d(xDelta + 24 + 10.5, // todo adjust live
-                    startPose.position.y + allianceCoef * yDelta,
+            navBuilder = navBuilder.splineToLinearHeading(new Pose2d(xDelta + 24 + 8.5, // todo adjust live
+                    startPose.position.y + allianceCoef * (yDelta + 2),
                     Math.toRadians(180)), Math.toRadians(180), (pose2dDual, posePath, v) -> 35);
         } else {
             if (propPosition == FrontCamera.PropPos.CENTER) {
@@ -105,7 +110,7 @@ public class VLRAuto extends LinearOpMode {
                 if (isNearBackboard) {
                     navBuilder = navBuilder.lineToY(allianceCoef * yDelta);
                 } else {
-                    navBuilder = navBuilder.lineToY((yDelta + 18) * allianceCoef).turnTo(Math.toRadians(-90));
+                    navBuilder = navBuilder.lineToY((yDelta + 18) * allianceCoef).turnTo(Math.toRadians(-90 * allianceCoef));
 
                 }
             } else {
@@ -117,7 +122,7 @@ public class VLRAuto extends LinearOpMode {
                 if (!isLeft && !isRed) angle = Math.PI;
 
                 // Determine prop position on field plane
-                Pose2d placePos = new Pose2d(startPose.position.x + xDelta,
+                Pose2d placePos = new Pose2d(startPose.position.x + xDelta * allianceCoef,
                         startPose.position.y + allianceCoef * yDelta, angle);
 
                 // Move up to not hit the pillar on the left / right while turning
@@ -135,10 +140,14 @@ public class VLRAuto extends LinearOpMode {
             navBuilder = navBuilder.lineToY(-10)
                     .turnTo(0);
         }
+//        else if (!isNearBackboard) {
+//            navBuilder = navBuilder.lineToX(startPose.position.x - 4);
+//        }
 
         // Move to backboard
         double backboardX = 72 - 24 - 6.5;
         double positionOffset = propPosition == FrontCamera.PropPos.LEFT ? 6 : propPosition == FrontCamera.PropPos.CENTER ? 0 : -6;
+        positionOffset += (!isNearBackboard && propPosition == FrontCamera.PropPos.LEFT && isRed) ? 4 : 0;
         double backboardY = (allianceCoef * (-24 * 1.5)) + positionOffset; // offset for claw
 
         if (shouldWait) {
@@ -150,7 +159,7 @@ public class VLRAuto extends LinearOpMode {
             if (true) { //propPosition != FrontCamera.PropPos.CENTER) {
                 // Advance forward, no need to dodge
                 navBuilder = navBuilder
-                        .lineToX(-72 + 24 * 1.5 - allianceCoef * (propPosition == FrontCamera.PropPos.LEFT ? -4 : 4))
+                        .lineToX(-72 + 24 * 1.5 - allianceCoef * (propPosition == FrontCamera.PropPos.LEFT ? -2 : 4))
                         .setTangent(Math.toRadians(90))
                         //.turnTo(Math.toRadians(95 * allianceCoef))
                         .lineToY(-12 * allianceCoef)
@@ -188,7 +197,6 @@ public class VLRAuto extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(navBuilder.build(),
                 lift.autonomous(distanceSensors::process)));
         //////////////////////////////////////////////////////////
-        sleep(150);
 
         // Align X with backboard using distance sensors
         double dist = distanceSensors.getMinDistance() - 2.2; // todo tune
@@ -210,7 +218,7 @@ public class VLRAuto extends LinearOpMode {
                 .lineToY(-(72 - 10) * allianceCoef)
                 .setTangent(Math.PI)
                 .lineToX(backboardX + 14)
-                .waitSeconds(5).afterTime(0.2, () -> lift.setExtension(0));
+                .waitSeconds(0.1).afterTime(0.2, () -> lift.setExtension(0));
 
         if (shouldMoveLeft) {
             Actions.runBlocking(new ParallelAction(parkingTraj.build(),
