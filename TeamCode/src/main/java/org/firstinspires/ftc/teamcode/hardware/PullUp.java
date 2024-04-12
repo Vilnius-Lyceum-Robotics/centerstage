@@ -8,7 +8,7 @@ public class PullUp {
     DcMotor right;
     enum State {
         DOWN(0),
-        UP(2950),
+        UP(3050),
         PULLUP(600);
 
         public final int value;
@@ -18,7 +18,7 @@ public class PullUp {
     }
 
     State state = State.DOWN;
-    private boolean encodersEnabled = true;
+    public boolean encodersEnabled = true;
 
     public PullUp(HardwareMap hardwareMap) {
         left = hardwareMap.get(DcMotor.class, "leftPullup");

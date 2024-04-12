@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.outoftheboxrobotics.photoncore.Photon;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.Chassis;
@@ -48,6 +49,7 @@ public class VLRTeleOp extends LinearOpMode {
         ClawSensors clawSensors = new ClawSensors(es, hardwareMap);
         Chassis chassis = new Chassis(hardwareMap, distanceSensors);
         GamepadEx gamepadEx = new GamepadEx(gamepad1);
+        GamepadEx gp2 = new GamepadEx(gamepad2);
         PullUp pullup = new PullUp(hardwareMap);
         Claw claw = new Claw(hardwareMap);
         Lift lift = new Lift(hardwareMap, claw, distanceSensors);
@@ -95,8 +97,6 @@ public class VLRTeleOp extends LinearOpMode {
 
             distanceSensors.process();
             clawSensors.process();
-//            leftLed.test();
-//            rightLed.test();
             leftLed.process();
             rightLed.process();
             // carry - blink red -done
@@ -114,70 +114,37 @@ public class VLRTeleOp extends LinearOpMode {
                 rightAutoOpen.set(true);
                 leftAutoOpen.set(true);
             } else {
-
-//                if (claw.isClosed(Claw.Hand.LEFT) && clawSensors.isCloseLeft()) {
-//                    leftLed.setColor(Led.Color.NONE);
-//                } else if (!claw.isClosed(Claw.Hand.LEFT) && clawSensors.isCloseLeft()) {
-//                    if (claw.isAutomatic() && lift.getPosition() == 0) {
-//                        claw.setPos(Claw.Hand.LEFT,Claw.ClawState.CLOSED);
-//                    }
-//                    leftLed.setColor(Led.Color.GREEN);
-//                } else if (claw.isClosed(Claw.Hand.LEFT)) {
-//
-//                    if(lift.getPosition() == 0 && leftAutoOpen){
-//                        claw.setPos(Claw.Hand.LEFT,Claw.ClawState.OPEN);
-//                        leftAutoOpen = false;
-//                    } else if(lift.getPosition() != 0) {
-//                        leftAutoOpen = true;
-//                    }
-//
-//                    leftLed.setColor(Led.Color.RED);
-//                } else {
-//                    leftLed.setColor(Led.Color.AMBER);
-//                }
-
                 // both claws closed - and both have pixel, lift go to position 1
                 if (automaticLift.get() && claw.rightIsClosed() && claw.leftIsClosed() && clawSensors.isCloseLeft() && clawSensors.isCloseRight()) {
                     lift.setExtension(1);
                     automaticLift.set(false);
                 }
-                leftLed.setColor(Led.Color.NONE);
-                rightLed.setColor(Led.Color.NONE);
+//                leftLed.setColor(Led.Color.NONE);
+//                rightLed.setColor(Led.Color.NONE);
                 claw.manageClaw(ModeManager.getMode() == ModeManager.Mode.NORMAL ? leftLed : rightLed, Claw.Hand.LEFT, clawSensors, lift, leftAutoOpen);
                 claw.manageClaw(ModeManager.getMode() == ModeManager.Mode.NORMAL ? rightLed : leftLed, Claw.Hand.RIGHT, clawSensors, lift, rightAutoOpen);
-
-//                if (claw.isClosed(Claw.Hand.RIGHT) && clawSensors.isCloseRight()) {
-//                    rightLed.setColor(Led.Color.NONE);
-//                } else if (!claw.isClosed(Claw.Hand.RIGHT) && clawSensors.isCloseRight()) {
-//                    if (claw.isAutomatic() && lift.getPosition() == 0) {
-//                        claw.setPos(Claw.Hand.RIGHT, Claw.ClawState.CLOSED);
-//                    }
-//                    rightLed.setColor(Led.Color.GREEN);
-//                } else if (claw.isClosed(Claw.Hand.RIGHT)) {
-//
-//                    if(lift.getPosition() == 0 && rightAutoOpen) {
-//                        claw.setPos(Claw.Hand.RIGHT, Claw.ClawState.OPEN);
-//                        rightAutoOpen = false;
-//                    } else if(lift.getPosition() != 0){
-//                        rightAutoOpen = true;
-//                    }
-//
-//                    rightLed.setColor(Led.Color.RED);
-//                } else {
-//                    rightLed.setColor(Led.Color.AMBER);
-//                }
-//            }
-
-                telemetry.addData("CLaw Closed", "Right Claw Closed %b - Left Claw Closed $b", claw.isClosed(Claw.Hand.RIGHT), claw.isClosed(Claw.Hand.LEFT));
-                telemetry.addData("Claw sensors", "%.2f %.2f", clawSensors.getDistanceLeft(), clawSensors.getDistanceRight());
-                telemetry.addData("Distance between sensors", "%.2f %.2f", distanceSensors.getLeftDistance(), distanceSensors.getRightDistance());
-                telemetry.addData("Angle between sensors", "%.2f", distanceSensors.getAngle());
-                telemetry.addData("Mode", ModeManager.getMode());
-                telemetry.addData("---------", "---------");
-                telemetry.addData("Last loop ms", lastLooptime);
-                telemetry.update();
-                lastLooptime = (int) looptime.milliseconds();
             }
+            // Override control
+
+            if (gp2.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+                pullup.disableEncoders();
+            }
+            pullup.setManualPower(gp2.getLeftY());
+            if (!pullup.encodersEnabled) {
+                telemetry.addData("OVERRIDE", "PULLUP ENCODERS DISABLED");
+                gamepad2.setLedColor(1, 0, 0, Gamepad.LED_DURATION_CONTINUOUS);
+            }
+
+
+            telemetry.addData("CLaw Closed", "Right Claw Closed %b - Left Claw Closed $b", claw.isClosed(Claw.Hand.RIGHT), claw.isClosed(Claw.Hand.LEFT));
+            telemetry.addData("Claw sensors", "%.2f %.2f", clawSensors.getDistanceLeft(), clawSensors.getDistanceRight());
+            telemetry.addData("Distance between sensors", "%.2f %.2f", distanceSensors.getLeftDistance(), distanceSensors.getRightDistance());
+            telemetry.addData("Angle between sensors", "%.2f", distanceSensors.getAngle());
+            telemetry.addData("Mode", ModeManager.getMode());
+            telemetry.addData("---------", "---------");
+            telemetry.addData("Last loop ms", lastLooptime);
+            telemetry.update();
+            lastLooptime = (int) looptime.milliseconds();
         }
     }
 }
