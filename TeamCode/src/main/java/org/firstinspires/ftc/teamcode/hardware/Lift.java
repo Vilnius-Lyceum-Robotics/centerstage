@@ -36,6 +36,7 @@ public class Lift {
     // dumb but idc
     private boolean firstTime = true;
     public AtomicBoolean shouldContinueAutonomousLoop = new AtomicBoolean(true);
+    private boolean encodersEnabled = true;
 
     public Lift(HardwareMap hardwareMap, Claw claw, DistanceSensors distanceSensors) {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
@@ -137,6 +138,26 @@ public class Lift {
         process(CALL_INTERVAL, automaticLift);
     }
 
+    public void disableEncoder() {
+        encodersEnabled = false;
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+    public void enableEncoder() {
+        encodersEnabled = true;
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void toggleEncoder() {
+        if(encodersEnabled) disableEncoder();
+        else enableEncoder();
+    }
+    public boolean encoderIsEnabled(){
+        return encodersEnabled;
+    }
+
+    public void setManualPower(double power){
+        if(encodersEnabled) return;
+        liftMotor.setPower(power);
+    }
     public class AutonomousLift implements Action {
         Supplier distanceProcessor;
 
