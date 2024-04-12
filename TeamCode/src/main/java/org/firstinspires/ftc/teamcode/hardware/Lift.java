@@ -143,8 +143,8 @@ public class Lift {
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     public void enableEncoder() {
+        if (!encodersEnabled) liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encodersEnabled = true;
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     public void toggleEncoder() {
         if(encodersEnabled) disableEncoder();
@@ -156,7 +156,7 @@ public class Lift {
 
     public void setManualPower(double power){
         if(encodersEnabled) return;
-        liftMotor.setPower(power);
+        liftMotor.setPower(power * 0.2);
     }
     public class AutonomousLift implements Action {
         Supplier distanceProcessor;

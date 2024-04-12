@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.hardware.DistanceSensors;
 import org.firstinspires.ftc.teamcode.hardware.Led;
 import org.firstinspires.ftc.teamcode.hardware.PullUp;
 import org.firstinspires.ftc.teamcode.hardware.Lift;
+import org.firstinspires.ftc.teamcode.hardware.Plane;
 import org.firstinspires.ftc.teamcode.helpers.BooleanState;
 import org.firstinspires.ftc.teamcode.helpers.ModeManager;
 
@@ -53,6 +54,8 @@ public class VLRTeleOp extends LinearOpMode {
         PullUp pullup = new PullUp(hardwareMap);
         Claw claw = new Claw(hardwareMap);
         Lift lift = new Lift(hardwareMap, claw, distanceSensors);
+
+        Plane plane = new Plane(hardwareMap);
 
         Led leftLed = new Led(hardwareMap, "Left", es);
         Led rightLed = new Led(hardwareMap, "Right", es);
@@ -95,6 +98,8 @@ public class VLRTeleOp extends LinearOpMode {
                 ModeManager.toggleMode();
             }
 
+            if (gamepadEx.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 1.0) plane.launch();
+
             distanceSensors.process();
             clawSensors.process();
             leftLed.process();
@@ -126,15 +131,26 @@ public class VLRTeleOp extends LinearOpMode {
             }
             // Override control
 
-            if (gp2.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+            if (gp2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
                 pullup.disableEncoders();
+            } else {
+                pullup.enableEncoders();
             }
             pullup.setManualPower(gp2.getLeftY());
             if (!pullup.encodersEnabled) {
                 telemetry.addData("OVERRIDE", "PULLUP ENCODERS DISABLED");
-                gamepad2.setLedColor(1, 0, 0, Gamepad.LED_DURATION_CONTINUOUS);
             }
 
+            if (gp2.isDown(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
+                lift.disableEncoder();
+            } else {
+                lift.enableEncoder();
+            }
+            lift.setManualPower(gp2.getRightY());
+            if (!lift.encoderIsEnabled()) {
+                telemetry.addData("OVERRIDE", "LIFT ENCODERS DISABLED");
+
+            }
 
             telemetry.addData("CLaw Closed", "Right Claw Closed %b - Left Claw Closed $b", claw.isClosed(Claw.Hand.RIGHT), claw.isClosed(Claw.Hand.LEFT));
             telemetry.addData("Claw sensors", "%.2f %.2f", clawSensors.getDistanceLeft(), clawSensors.getDistanceRight());
