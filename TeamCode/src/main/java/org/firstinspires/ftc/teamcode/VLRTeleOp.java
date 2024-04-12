@@ -142,6 +142,7 @@ public class VLRTeleOp extends LinearOpMode {
                     automaticLift.set(false);
                 }
                 leftLed.setColor(Led.Color.NONE);
+                rightLed.setColor(Led.Color.NONE);
                 claw.manageClaw(ModeManager.getMode() == ModeManager.Mode.NORMAL ? leftLed : rightLed, Claw.Hand.LEFT, clawSensors, lift, leftAutoOpen);
                 claw.manageClaw(ModeManager.getMode() == ModeManager.Mode.NORMAL ? rightLed : leftLed, Claw.Hand.RIGHT, clawSensors, lift, rightAutoOpen);
 
