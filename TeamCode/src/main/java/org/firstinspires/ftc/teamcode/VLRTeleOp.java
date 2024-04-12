@@ -127,17 +127,16 @@ public class VLRTeleOp extends LinearOpMode {
             } else {
                 // both claws closed - and both have pixel, lift go to position 1
                 if (automaticLift.get() && claw.rightIsClosed() && claw.leftIsClosed() && clawSensors.isCloseLeft() && clawSensors.isCloseRight()) {
-                    if(!autoLiftTimerIsRunning){
+                    if (!autoLiftTimerIsRunning) {
                         autoLiftTimer.reset();
                         autoLiftTimerIsRunning = true;
-                        return;
+                    } else if (autoLiftTimer.milliseconds() < AUTO_LIFT_DELAY) {
+
+                    } else {
+                        lift.setExtension(1);
+                        automaticLift.set(false);
+                        autoLiftTimerIsRunning = false;
                     }
-                    if(autoLiftTimer.milliseconds() < AUTO_LIFT_DELAY){
-                        return;
-                    }
-                    lift.setExtension(1);
-                    automaticLift.set(false);
-                    autoLiftTimerIsRunning = false;
                 }
 //                leftLed.setColor(Led.Color.NONE);
 //                rightLed.setColor(Led.Color.NONE);
