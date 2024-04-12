@@ -126,7 +126,7 @@ public class VLRTeleOp extends LinearOpMode {
                 leftAutoOpen.set(true);
             } else {
                 // both claws closed - and both have pixel, lift go to position 1
-                if (automaticLift.get() && claw.rightIsClosed() && claw.leftIsClosed() && clawSensors.isCloseLeft() && clawSensors.isCloseRight()) {
+                if (automaticLift.get() && lift.getPosition() == 0 && claw.rightIsClosed() && claw.leftIsClosed() && clawSensors.isCloseLeft() && clawSensors.isCloseRight()) {
                     if (!autoLiftTimerIsRunning) {
                         autoLiftTimer.reset();
                         autoLiftTimerIsRunning = true;
