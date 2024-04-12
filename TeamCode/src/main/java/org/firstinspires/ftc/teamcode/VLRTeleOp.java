@@ -38,6 +38,10 @@ public class VLRTeleOp extends LinearOpMode {
     public BooleanState leftAutoOpen;
     public BooleanState automaticLift;
 
+    private final int AUTO_LIFT_DELAY = 500; // in ms
+    private ElapsedTime autoLiftTimer;
+    private boolean autoLiftTimerIsRunning = false;
+
     @Override
     public void runOpMode() {
         rightAutoOpen = new BooleanState(true);
@@ -59,6 +63,8 @@ public class VLRTeleOp extends LinearOpMode {
 
         ElapsedTime looptime = new ElapsedTime();
         int lastLooptime = 0;
+
+        autoLiftTimer = new ElapsedTime();
 
         waitForStart();
 
@@ -118,8 +124,17 @@ public class VLRTeleOp extends LinearOpMode {
             } else {
                 // both claws closed - and both have pixel, lift go to position 1
                 if (automaticLift.get() && claw.rightIsClosed() && claw.leftIsClosed() && clawSensors.isCloseLeft() && clawSensors.isCloseRight()) {
+                    if(!autoLiftTimerIsRunning){
+                        autoLiftTimer.reset();
+                        autoLiftTimerIsRunning = true;
+                        return;
+                    }
+                    if(autoLiftTimer.milliseconds() < AUTO_LIFT_DELAY){
+                        return;
+                    }
                     lift.setExtension(1);
                     automaticLift.set(false);
+                    autoLiftTimerIsRunning = false;
                 }
                 claw.manageClaw(ModeManager.getMode() == ModeManager.Mode.NORMAL ? leftLed : rightLed, Claw.Hand.LEFT, clawSensors, lift, leftAutoOpen);
                 claw.manageClaw(ModeManager.getMode() == ModeManager.Mode.NORMAL ? rightLed : leftLed, Claw.Hand.RIGHT, clawSensors, lift, rightAutoOpen);
