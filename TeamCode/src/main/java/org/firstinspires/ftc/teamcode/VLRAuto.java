@@ -39,8 +39,12 @@ public class VLRAuto extends LinearOpMode {
         boolean isRed = manualConfigurator.upDownSelect("Red", "Blue");
         boolean isNearBackboard = manualConfigurator.leftRightSelect("Backboard", "Audience");
 
-        boolean shouldWait = manualConfigurator.upDownSelect("Wait 5s", "Do not wait");
-        boolean shouldMoveLeft = manualConfigurator.leftRightSelect("Park to the side", "Do not move");
+        int shouldWait = manualConfigurator.amountSelect(0, 10, "wait time");
+        boolean shouldPark = manualConfigurator.leftRightSelect("Park", "Do not move");
+        boolean shouldMoveLeft = false;
+        if (shouldPark){
+            shouldMoveLeft = manualConfigurator.upDownSelect("Move left", "Move right");
+        }
 
         FrontCamera cam = new FrontCamera(hardwareMap, isRed);
 
@@ -59,6 +63,12 @@ public class VLRAuto extends LinearOpMode {
         cam.process(5);
         telemetry.addData("ANGLE", "%.3f", (float) cam.propAng);
         ///////////////////////////////////////////////
+        while (!isStarted()) {
+            if (!distanceSensors.makesSense()) {
+                telemetry.addData("DISTANCE", "Sensor values do not make sense: %.2f %.2f", distanceSensors.getLeftDistance(), distanceSensors.getRightDistance());
+                telemetry.update();
+            }
+        }
         waitForStart();
         ///////////////////////////////////////////////
 
@@ -137,7 +147,7 @@ public class VLRAuto extends LinearOpMode {
         if (propPosition == FrontCamera.PropPos.CENTER && isNearBackboard)
             navBuilder = navBuilder.lineToY((yDelta - 3.5) * allianceCoef);
         else if (propPosition == FrontCamera.PropPos.CENTER) {
-            navBuilder = navBuilder.lineToY(-10)
+            navBuilder = navBuilder.lineToY(-10 * allianceCoef)
                     .turnTo(0);
         }
 //        else if (!isNearBackboard) {
@@ -148,10 +158,11 @@ public class VLRAuto extends LinearOpMode {
         double backboardX = 72 - 24 - 6.5;
         double positionOffset = propPosition == FrontCamera.PropPos.LEFT ? 6 : propPosition == FrontCamera.PropPos.CENTER ? 0 : -6;
         positionOffset += (!isNearBackboard && propPosition == FrontCamera.PropPos.LEFT && isRed) ? 4 : 0;
+        positionOffset += (propPosition == FrontCamera.PropPos.CENTER && !isRed) ? -4 : 0;
         double backboardY = (allianceCoef * (-24 * 1.5)) + positionOffset; // offset for claw
 
-        if (shouldWait) {
-            navBuilder = navBuilder.waitSeconds(5);
+        if (shouldWait > 0) {
+            navBuilder = navBuilder.waitSeconds(shouldWait);
         }
 
         if (!isNearBackboard) {
@@ -212,15 +223,26 @@ public class VLRAuto extends LinearOpMode {
                 .build());
         lift.setExtension(1);
 
-        TrajectoryActionBuilder parkingTraj = drive.actionBuilder(new Pose2d(backboardX - 1.5, backboardY, 0));
-        parkingTraj = parkingTraj
-                .setTangent(Math.PI / 2)
-                .lineToY(-(72 - 10) * allianceCoef)
-                .setTangent(Math.PI)
-                .lineToX(backboardX + 14)
-                .waitSeconds(0.1).afterTime(0.2, () -> lift.setExtension(0));
 
-        if (shouldMoveLeft) {
+
+        if (shouldPark) {
+            TrajectoryActionBuilder parkingTraj = drive.actionBuilder(new Pose2d(backboardX - 1.5, backboardY, 0));
+
+            if (shouldMoveLeft) {
+                parkingTraj = parkingTraj
+                        .setTangent(Math.PI / 2)
+                        .lineToY(-(72 - 10) * allianceCoef)
+                        .setTangent(Math.PI)
+                        .lineToX(backboardX + 14)
+                        .waitSeconds(0.1).afterTime(0.2, () -> lift.setExtension(0));
+            } else {
+                parkingTraj = parkingTraj
+                        .setTangent(Math.PI / 2)
+                        .lineToY(-12 * allianceCoef)
+                        .setTangent(Math.PI)
+                        .lineToX(backboardX + 14)
+                        .waitSeconds(0.1).afterTime(0.2, () -> lift.setExtension(0));
+            }
             Actions.runBlocking(new ParallelAction(parkingTraj.build(),
                     lift.autonomous(distanceSensors::process)));
         } else {

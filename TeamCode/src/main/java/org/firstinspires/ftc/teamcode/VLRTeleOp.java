@@ -87,6 +87,14 @@ public class VLRTeleOp extends LinearOpMode {
                 lift.extend();
             } else if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
                 lift.retract();
+            } else if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
+                for (int i = lift.getPosition() - 1; i > 0; i--) {
+                    lift.retract();
+                }
+            } else if (gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                for (int i = lift.getPosition(); i < lift.getMaxHeight(); i++) {
+                    lift.extend();
+                }
             }
 
             if (gamepadEx.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {

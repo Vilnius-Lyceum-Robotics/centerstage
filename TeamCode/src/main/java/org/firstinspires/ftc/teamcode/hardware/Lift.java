@@ -32,11 +32,13 @@ public class Lift {
     private static final int FREE_DISTANCE = 6; // the distance from the backboard needed to freely use the lift (in inches)
     private int currentTimeout;
     private int extendedComponentId;
-    private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(0, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));
+    private static final ArrayList<Integer> extensionValues = new ArrayList<>(Arrays.asList(15, 100, 1160, 1500, 1900, 2300, 2700, 3100, 3500));
     // dumb but idc
     private boolean firstTime = true;
     public AtomicBoolean shouldContinueAutonomousLoop = new AtomicBoolean(true);
     private boolean encodersEnabled = true;
+
+    private int maxHeight = 1;
 
     public Lift(HardwareMap hardwareMap, Claw claw, DistanceSensors distanceSensors) {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
@@ -63,6 +65,11 @@ public class Lift {
             ModeManager.setBackboardMode();
         }
         extendedComponentId++;
+        if (extendedComponentId > maxHeight) maxHeight = extendedComponentId;
+    }
+
+    public int getMaxHeight() {
+        return maxHeight;
     }
 
     public void retract() {
@@ -101,7 +108,6 @@ public class Lift {
 //                currentTimeout = LIFT_TIMEOUT;
                   timer.reset();
             }
-
         } else {
             claw.rotatorUp();
             claw.setClawState(Claw.ClawState.UP);

@@ -37,6 +37,27 @@ public class ManualConfigurator {
         }
     }
 
+    public int amountSelect(int min, int max, String option) throws InterruptedException {
+        telemetryPrint("Select " + option + " amount (" + min + " to " + max + ") - selected " + min);
+        int amount = min;
+        while (true) {
+            if (gamepadEx.getButton(GamepadKeys.Button.DPAD_UP)) {
+                amount += 1;
+                sleep(50);
+            } else if (gamepadEx.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                amount -= 1;
+                sleep(50);
+            } else if (gamepadEx.getButton(GamepadKeys.Button.DPAD_LEFT)) {
+                telemetryPrint("Selected " + amount);
+                sleep(1000);
+                return amount;
+            }
+            sleep(20);
+            amount = Math.min(Math.max(amount, min), max);
+            telemetryPrint("Select " + option + " amount (" + min + " to " + max + ") - selected " + amount);
+        }
+    }
+
     public boolean leftRightSelect(String trueOption, String falseOption) throws InterruptedException {
         telemetryPrint(trueOption + " (left) or " + falseOption + " (right)?");
         return selectOption(trueOption, falseOption, GamepadKeys.Button.DPAD_LEFT, GamepadKeys.Button.DPAD_RIGHT);
