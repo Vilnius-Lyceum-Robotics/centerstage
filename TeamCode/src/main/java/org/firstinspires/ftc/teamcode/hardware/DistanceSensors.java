@@ -2,15 +2,17 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.util.concurrent.ExecutorService;
+
 public class DistanceSensors {
-    private final BackboardDistanceSensor distanceSensorLeft;
-    private final BackboardDistanceSensor distanceSensorRight;
+    private final AsyncDistanceSensor distanceSensorLeft;
+    private final AsyncDistanceSensor distanceSensorRight;
     private static final double DISTANCE_BETWEEN_SENSORS = 9.17; // inches
     private static final double EXCEEDING_DISTANCE = 17; // inches
 
-    public DistanceSensors(HardwareMap hardwareMap) {
-        distanceSensorLeft = new BackboardDistanceSensor(hardwareMap, "distanceSensorLeft");
-        distanceSensorRight = new BackboardDistanceSensor(hardwareMap, "distanceSensorRight");
+    public DistanceSensors(ExecutorService es, HardwareMap hardwareMap) {
+        distanceSensorLeft = new AsyncDistanceSensor(es, hardwareMap, "distanceSensorLeft");
+        distanceSensorRight = new AsyncDistanceSensor(es, hardwareMap, "distanceSensorRight");
     }
 
     public boolean process() {
